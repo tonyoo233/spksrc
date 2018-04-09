@@ -1,0 +1,44 @@
+if: tag IS present
+env:
+  matrix:
+  - SYNOARCH=arch-x64-6.1
+  - SYNOARCH=arch-x64-5.2
+  - SYNOARCH=arch-88f6281-6.1
+  - SYNOARCH=arch-alpine-6.1
+  - SYNOARCH=arch-armada370-6.1
+  - SYNOARCH=arch-armada375-6.1
+  - SYNOARCH=arch-armada38x-6.1
+  - SYNOARCH=arch-armadaxp-6.1
+  - SYNOARCH=arch-comcerto2k-6.1
+  - SYNOARCH=arch-denverton-6.1
+  - SYNOARCH=arch-evansport-6.1
+  - SYNOARCH=arch-hi3535-6.1
+  - SYNOARCH=arch-monaco-6.1
+  - SYNOARCH=arch-qoriq-6.1
+  - SYNOARCH=arch-rtd1296-6.1
+  - SYNOARCH=arch-ppc853x-5.2
+notifications:
+  email: false
+sudo: required
+dist: trusty
+script:
+- PKG=${TRAVIS_TAG%%-*}
+- docker pull synocommunity/spksrc
+- docker run -it -v `pwd`:/spksrc synocommunity/spksrc /bin/bash -c "cd /spksrc &&
+  make setup && cd spk/$PKG && make $SYNOARCH>/dev/null"
+- ls packages/*.spk
+services:
+- docker
+git:
+  depth: 1
+deploy:
+  provider: releases
+  api_key:
+    secure: fkxNzRZn9oM0dKYa/seHXNFtNBZhkIriQzOMUnfiMKQlNBDmYmU1rnB6mBDyYmhctJF4xqHpQ16D6NP2FeP3cfpFLM7lFYJwuq0WGINvG0qiGlPt2M9+ZVd+gQLbB08sePQEsE/tKv8k1oNhPGBU8M38Se3AWE1+7sR7rvdbLntT+Ld4YwBjkgDdhv6M2I6tslNdMOovEYo1ahPsMy/WbCCOV1hwtcdYDbnkTXLCWYM6aUlVwG022Z5JMYef/MRnyC+BpEAAer4s/1hNlMmtf89bP3nDOkkldMFe+kshLoZDRRaVbE+nI4FJIlReRudXOOlXa9TJC0AThhnkx4VU5KuKEktAIIo8EjZgA/oHtv1n7QzAA4mY0WKVorn4wsgY7jaAPHnQGEUMyBQ9H2yPPMX/xnKhjDsio276p86vhfko0KtxEf5z9PhUODMEkxeAvSvWsoIxkon8yTOND/rEH/p8xXetr+j2wp0iE4nP7+awST3g2aEYD57/4Vz3SEMuGTTVlu+rKD+nmpKMAUgoo4zTfIn3f32RX4fAqaI2bVEAm0J+hMe1hbL5EKI/hLVCfpvlarCEwaKdVTT/FR2M8iNQWhysxVY2RdK4u9g6cxq+zLmCcXvOFD7/pXWSCF+IUzfS+DCiX4ltA4HG0NJ2eFAir9/iFZyAVHR6cLA5jqs=
+  file_glob: true
+  file: packages/*.spk
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: publicarray/spksrc
+    tags: true

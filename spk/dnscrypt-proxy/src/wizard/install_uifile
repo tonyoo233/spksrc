@@ -1,7 +1,7 @@
 [{
     "step_title": "DNSCrypt-proxy configuration",
     "items": [{
-        "desc": "Configuration file is located at: /volume?/@appstore/dnscrypt-proxy/etc/dnscrypt-proxy.toml"
+        "desc": "Configuration file is located at: /var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml"
     }, {
         "type": "textfield",
         "subitems": [{

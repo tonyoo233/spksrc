@@ -30,4 +30,11 @@ service_postinst ()
             -e "s/ipv6_servers = .*/ipv6_servers = ${wizard_ipv6:=false}/" \
             "${CFG_FILE}" >> "${INST_LOG}"
     fi
+
+    ln -s "${SYNOPKG_PKGDEST}/ui" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy
+}
+
+service_postuninst ()
+{
+    rm -f /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy
 }

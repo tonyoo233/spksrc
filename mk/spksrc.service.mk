@@ -39,7 +39,6 @@ endif
 .PHONY: $(PRE_SERVICE_TARGET) $(SERVICE_TARGET) $(POST_SERVICE_TARGET)
 .PHONY: $(DSM_SCRIPTS_DIR)/service-setup $(DSM_SCRIPTS_DIR)/start-stop-status
 .PHONY: $(DSM_CONF_DIR)/privilege $(DSM_CONF_DIR)/$(SPK_NAME).sc $(STAGING_DIR)/$(DSM_UI_DIR)/config
-.PHONY: $(STAGING_DIR)/$(DSM_UI_DIR)
 
 service_msg_target:
 	@$(MSG) "Generating service scripts for $(NAME)"
@@ -197,9 +196,6 @@ ifeq ($(strip $(NO_SERVICE_SHORTCUT)),)
 ifeq ($(strip $(SERVICE_URL)),)
 SERVICE_URL=/
 endif
-ifeq ($(strip $(SERVICE_TYPE)),)
-SERVICE_TYPE=url
-endif
 ifeq ($(strip $(SERVICE_PORT_PROTOCOL)),)
 SERVICE_PORT_PROTOCOL=http
 endif
@@ -217,7 +213,7 @@ $(STAGING_DIR)/$(DSM_UI_DIR)/config:
 	@echo "    \"title\": \"${DISPLAY_NAME}\"," >> $@
 	@echo "    \"desc\": \"${DESCRIPTION}\"," >> $@
 	@echo "    \"icon\": \"images/${SPK_NAME}-{0}.png\"," >> $@
-	@echo "    \"type\": \"${SERVICE_TYPE}\"," >> $@
+	@echo "    \"type\": \"url\"," >> $@
 	@echo "    \"protocol\": \"${SERVICE_PORT_PROTOCOL}\"," >> $@
 	@echo "    \"port\": \"${SERVICE_PORT}\"," >> $@
 	@echo "    \"url\": \"${SERVICE_URL}\"," >> $@
@@ -227,13 +223,6 @@ $(STAGING_DIR)/$(DSM_UI_DIR)/config:
 	@echo '} } }' >> $@
 
 SERVICE_FILES += $(STAGING_DIR)/$(DSM_UI_DIR)/config
-
-$(STAGING_DIR)/$(DSM_UI_DIR):
-	$(create_target_dir)
-	cp -rf $(CURDIR)/src/$(DSM_UI_DIR)/* $(STAGING_DIR)/$(DSM_UI_DIR)/
-
-SERVICE_FILES += $(STAGING_DIR)/$(DSM_UI_DIR)
-
 endif
 endif
 endif

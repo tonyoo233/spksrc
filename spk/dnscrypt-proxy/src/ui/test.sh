@@ -10,4 +10,7 @@ go build -ldflags "-s -w" -o index.cgi cgi.go
 ## test
 export REQUEST_METHOD=GET
 export SERVER_PROTOCOL=HTTP/1.1
-exec ./index.cgi
+./index.cgi --dev
+
+export REQUEST_METHOD=POST
+echo "ListenAddresses=0.0.0.0%3A1053+&ServerNames=cloudflare+google+ " | ./index.cgi --dev

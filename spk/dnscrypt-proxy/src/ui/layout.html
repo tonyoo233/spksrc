@@ -5,12 +5,12 @@
 </head>
 <body>
     <h1>{{.Title}}</h1>
-    <form method="POST">
+    <form name="settings" method="POST">
         <div>
-            ListenAddresses:<input type="text" name="ListenAddresses" value="{{range .ListenAddresses}}{{.}}, {{end}}">
+            ListenAddresses:<input type="text" name="ListenAddresses" value="{{range .ListenAddresses}}{{.}} {{end}}">
         </div>
         <div>
-            ServerNames:<input type="text" name="ServerNames" value="{{range .ServerNames}}{{.}}, {{end}}">
+            ServerNames:<input type="text" name="ServerNames" value="{{range .ServerNames}}{{.}} {{end}}">
         </div>
         <div>
             SourceIPv6:<input type="checkbox" name="SourceIPv6" value="{{.SourceIPv6}}">

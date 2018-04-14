@@ -7,7 +7,6 @@
         <!-- https://extjs.cachefly.net/ext-3.2.0/docs/ -->
         <link href="/scripts/ext-3.4/resources/css/ext-all.css" rel="stylesheet" type="text/css"/>
         <link href="/scripts/ext-3.4/resources/css/xtheme-blue.css" rel="stylesheet" type="text/css"/>
-        <!-- <script src="/webman/dsmtoken.cgi" > </script> -->
         <script src="/scripts/ext-3.4/adapter/ext/ext-base.js" type="text/javascript">
         </script>
         <script src="/scripts/ext-3.4/ext-all.js" type="text/javascript">
@@ -15,7 +14,8 @@
     </head>
     <body>
         <script>
-            function estimateHeight() {
+// Some credit goes to Remco Schellekens (Merty): http://www.mertymade.com/syno/
+function estimateHeight() {
     var myWidth = 0, myHeight = 0;
     if( typeof( window.innerWidth ) == 'number' ) {
         //Non-IE
@@ -30,35 +30,6 @@
     return myHeight;
 }
 
-// function onSaveBtnClick(item) {
-//     var form = this.up('form').getForm();
-//     if (form.isValid()) {
-//         form.submit({
-//             success: function(form, action) {
-//                Ext.Msg.alert('Success', action.result.message);
-//             },
-//             failure: function(form, action) {
-//                 Ext.Msg.alert('Failed', action.result ? action.result.message : 'No response');
-//             }
-//         });
-//     } else {
-//         Ext.Msg.alert( "Error!", "Your form is invalid!" );
-//     }
-    // var conn = new Ext.data.Connection();
-    // conn.request({
-    //     // url: '',
-    //     params: Ext.urlEncode({name: combo.value, action: texta.getValue()}),
-    //     success: function(responseObject) {
-    //         if (responseObject.responseText=="ok\n") {
-    //             Ext.Msg.alert('Status','Changes&nbsp;saved.');
-    //         } else {
-    //             Ext.Msg.alert('Status',responseObject.responseText);
-    //         }
-
-    //         saveBtn.disable();
-    //         // repairBtn.enable();
-    //     }
-    // });
 var formAction = function(form, action) {
     var form = Ext.getCmp('formPanel');
     form.el.unmask();
@@ -75,13 +46,10 @@ Ext.onReady(function() {
     var saveBtn = new Ext.Button({
         name: 'save',
         text: 'Save',
-        // disabled: true,
         handler: function() {
             var form = Ext.getCmp('formPanel');
             form.getForm().submit({
                 url: 'index.cgi',
-                // success: formAction,
-                // failure: formAction
             });
         }
     });
@@ -91,28 +59,15 @@ Ext.onReady(function() {
         value: '{{.FileData}}',
         style: 'font-family:monospace',
         grow: false,
-        preventScrollbars: false,
-        // anchor: '100% -53',
+        autoScroll: true,
         enableKeyEvents: true,
         width: '100%',
         height: estimateHeight(),
-        // listeners: {
-        //     keypress: function(f, e) {
-        //         if (saveBtn.disabled) {
-        //             saveBtn.enable();
-        //         }
-        //     }
-        // }
     });
 
     var form = new Ext.FormPanel({
-        // renderTo: 'content',
-        // baseCls: 'x-plain',
-        // url:'',
         id: 'formPanel',
-        // width: 600,
         layout: 'column',
-        // width: '100%',
         autoWidth: true,
         height: estimateHeight(),
         items: [textArea],
@@ -130,27 +85,5 @@ Ext.onReady(function() {
     });
 });
         </script>
-        <!--     <form name="settings" method="POST">
-        <div>
-            ListenAddresses:<input type="text" name="ListenAddresses" value="{{range .TomlData.ListenAddresses}}{{.}} {{end}}">
-        </div>
-        <div>
-            ServerNames:<input type="text" name="ServerNames" value="{{range .TomlData.ServerNames}}{{.}} {{end}}">
-        </div>
-        <div>
-            SourceIPv6:<input type="checkbox" name="SourceIPv6" value="{{.TomlData.SourceIPv6}}">
-        </div>
-        <div>
-            <input type="submit" value="save">
-        </div>
-    </form> -->
-        <!--     <form method="POST">
-        <div>
-            <textarea rows="30" cols="80" name="file">{{.FileData}}</textarea>
-        </div>
-        <div>
-            <input type="submit" value="save">
-        </div>
-    </form> -->
     </body>
 </html>

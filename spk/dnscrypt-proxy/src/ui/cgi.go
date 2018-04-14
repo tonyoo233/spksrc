@@ -6,9 +6,10 @@ import (
     "flag"
     "strings"
     "os/exec"
+    "io/ioutil"
     // "io/ioutil"
     "bufio"
-    "bytes"
+    // "bytes"
     "errors"
     "html/template"
     "net/url"
@@ -20,45 +21,15 @@ var dev *bool
 
 // ref: https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-proxy/config.go
 type Config struct {
-    Title string
     ListenAddresses []string `toml:"listen_addresses"`
     ServerNames []string `toml:"server_names"`
     SourceIPv6 bool `toml:"ipv6_servers"`
 }
 
-func LoadConfig(configFile string) (*Config, error) {
-    if _, err := os.Stat(configFile); os.IsNotExist(err) {
-        return nil, errors.New("Config file does not exist.")
-    } else if err != nil {
-        return nil, err
-    }
-
-    var conf Config
-    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
-        return nil, err
-    }
-
-    return &conf, nil
-}
-
-func renderhtml(configFile string) {
-
-    conf, err := LoadConfig(configFile)
-    if err != nil {
-        logError(err.Error())
-    }
-
-    tmpl, err := template.ParseFiles("layout.html")
-    if err != nil {
-        logError(err.Error())
-    }
-
-    conf.Title = "DNSCrypt-proxy"
-    fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n\n")
-    tmpl.Execute(os.Stdout, conf)
-    if err != nil {
-        logError(err.Error())
-    }
+type Page struct {
+    Title string
+    FileData string
+    TomlData Config
 }
 
 func token() (string, error) {
@@ -79,6 +50,7 @@ func token() (string, error) {
     }
     return string(token[1]), nil
 }
+
 
 func auth() (string) {
     token, err := token()
@@ -105,11 +77,155 @@ func logError(str string) { // dump and die
     fmt.Println(str)
     os.Exit(0)
 }
+
 func logUnauthorised(str string) { // dump and die
     fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n\n")
     fmt.Println(str)
     os.Exit(0)
 }
+
+func loadConfig(configFile string) (*Config, error) {
+    if _, err := os.Stat(configFile); os.IsNotExist(err) {
+        return nil, errors.New("Config file does not exist.")
+    } else if err != nil {
+        return nil, err
+    }
+
+    var conf Config
+    if _, err := toml.DecodeFile(configFile, &conf); err != nil {
+        return nil, err
+    }
+
+    return &conf, nil
+}
+
+func loadFile(file string) (string) {
+    data, err := ioutil.ReadFile(file)
+    if err != nil {
+        logError(err.Error())
+    }
+    return string(data)
+}
+
+func saveFile(file string, data string) {
+    // change permission so that 'system' can write to file
+    // if err := os.Chown(file, os.Getgid(), 0); err != nil {
+    //     logError(err.Error())
+    // }
+
+    err := ioutil.WriteFile(file, []byte(data), 0644)
+    if err != nil {
+        logError(err.Error())
+    }
+    return
+}
+
+func renderHtml(configFile string) {
+    var page Page
+    fileData := loadFile(configFile)
+
+    conf, err := loadConfig(configFile)
+    if err != nil {
+        logError(err.Error())
+    }
+
+    tmpl, err := template.ParseFiles("layout.html")
+    if err != nil {
+        logError(err.Error())
+    }
+
+    page.Title = "DNSCrypt-proxy"
+    page.FileData = fileData
+    page.TomlData = *conf
+    fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n")
+    tmpl.Execute(os.Stdout, page)
+    if err != nil {
+        logError(err.Error())
+    }
+}
+
+// func renderHtmlFromToml(configFile string) {
+
+//     conf, err := loadConfig(configFile)
+//     if err != nil {
+//         logError(err.Error())
+//     }
+
+//     tmpl, err := template.ParseFiles("layout.html")
+//     if err != nil {
+//         logError(err.Error())
+//     }
+
+//     conf.Title = "DNSCrypt-proxy"
+//     fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n\n")
+//     tmpl.Execute(os.Stdout, conf)
+//     if err != nil {
+//         logError(err.Error())
+//     }
+// }
+
+func getPost() (string) {
+    // get data
+    s := bufio.NewScanner(os.Stdin)
+    var data string
+    for s.Scan() {
+        data+=s.Text()+"\n"
+    }
+    // unescape url chars
+    data, err := url.QueryUnescape(data)
+    if err != nil {
+        logError("bad data: "+data)
+    }
+
+    // logError("data: "+data)
+    // split on &
+    return data
+}
+
+func readPost() (string) {
+    params := getPost()
+    pararmSearch := "file="
+
+    if (strings.HasPrefix(params, pararmSearch)) {
+        fileData := string([]rune(params)[len(pararmSearch):])
+        return fileData
+    }
+    // readPostAsToml()
+    return ""
+}
+
+// func readPostAsToml() {
+//         // split on &
+//         params := getPost()
+
+//         var conf Config
+//         for _, param := range params {
+//             param = strings.Trim(param, " \n")
+//             tmp := strings.Split(param, "=")
+
+//             if tmp[0] == "ListenAddresses" { // todo: dynamically insert the data
+//                 tmp1 := strings.Split(tmp[1], " ")
+//                 conf.ListenAddresses = tmp1
+//             }
+//             if tmp[0] == "ServerNames" {
+//                 tmp1 := strings.Split(tmp[1], " ")
+//                 conf.ServerNames = tmp1
+//             }
+//             if tmp[0] == "SourceIPv6" {
+//                 if tmp[1] == "true" {
+//                     conf.SourceIPv6 = true
+//                 } else {
+//                     conf.SourceIPv6 = false
+//                 }
+//             }
+//         }
+//         buf := new(bytes.Buffer)
+//         if err := toml.NewEncoder(buf).Encode(conf); err != nil {
+//             logError(err.Error())
+//         }
+//         logError(buf.String()) // toml data
+//         // logError("data: "+data)
+// }
 
 func main() {
     // Todo:
@@ -135,52 +251,17 @@ func main() {
     if *dev {
         configFile = "example-dnscrypt-proxy.toml"
     }
+// -------------
+
 
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" {
-        // get data
-        s := bufio.NewScanner(os.Stdin)
-        var data string
-        for s.Scan() {
-            data+=s.Text()+"\n"
+        if fileData := readPost(); fileData != "" {
+            saveFile(configFile, fileData)
         }
-        // unescape url chars
-        data, err := url.QueryUnescape(data)
-        if err != nil {
-            logError("bad data: "+data)
-        }
-        // split on &
-        params := strings.Split(data, "&")
-        // trim white-space
-
-        var conf Config
-        for _, param := range params {
-            param = strings.Trim(param, " \n")
-            tmp := strings.Split(param, "=")
-
-            if tmp[0] == "ListenAddresses" { // todo: dynamically insert the data
-                tmp1 := strings.Split(tmp[1], " ")
-                conf.ListenAddresses = tmp1
-            }
-            if tmp[0] == "ServerNames" {
-                tmp1 := strings.Split(tmp[1], " ")
-                conf.ServerNames = tmp1
-            }
-            if tmp[0] == "SourceIPv6" {
-                if tmp[1] == "true" {
-                    conf.SourceIPv6 = true
-                } else {
-                    conf.SourceIPv6 = false
-                }
-            }
-        }
-        buf := new(bytes.Buffer)
-        if err := toml.NewEncoder(buf).Encode(conf); err != nil {
-            logError(err.Error())
-        }
-        logError(buf.String()) // toml data
-        // logError("data: "+data)
+        // readPostAsToml()
     }
 
-    renderhtml(configFile)
+    // renderHtmlFromToml(configFile)
+    renderHtml(configFile)
 }

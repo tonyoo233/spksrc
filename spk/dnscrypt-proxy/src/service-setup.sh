@@ -32,6 +32,12 @@ service_postinst ()
     fi
 
     ln -s "${SYNOPKG_PKGDEST}/ui" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy
+
+    ## Allow cgi user to write to this file
+    # chown dosn't work as it's overwritten see page 104 in https://developer.synology.com/download/developer-guide.pdf
+    # chown system /var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml
+    # Less than ideal solution, ToDo: find something better
+    chmod 0666 /var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml
 }
 
 service_postuninst ()

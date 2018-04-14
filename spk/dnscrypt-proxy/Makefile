@@ -1,6 +1,6 @@
 SPK_NAME = dnscrypt-proxy
 SPK_VERS = 2.0.9
-SPK_REV = 0
+SPK_REV = 1
 SPK_ICON = src/dnscrypt-proxy.png
 
 UNSUPPORTED_ARCHS = $(PPC_ARCHES)
@@ -12,7 +12,7 @@ DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protoc
 DISPLAY_NAME = DNSCrypt-proxy
 HOMEPAGE = https://github.com/jedisct1/dnscrypt-proxy
 LICENSE = ISC
-CHANGELOG = "New version 2 of dnscrypt-proxy"
+CHANGELOG = "Added a basic UI"
 
 RELOAD_UI = yes
 STARTABLE = yes

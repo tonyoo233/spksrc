@@ -113,7 +113,7 @@ func getPost() (string) {
     s := bufio.NewScanner(os.Stdin)
     var data string
     for s.Scan() {
-        data+=s.Text()+"\n"
+        data+=s.Text()
     }
     // unescape url chars
     data, err := url.QueryUnescape(data)

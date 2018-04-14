@@ -13,7 +13,8 @@
     <body>
         <script>
 // Some credit goes to Remco Schellekens (Merty): http://www.mertymade.com/syno/
-function estimateHeight() {
+function estimateHeight(offset) {
+    offset = offset || 0
     var myWidth = 0, myHeight = 0;
     if( typeof( window.innerWidth ) == 'number' ) {
         //Non-IE
@@ -25,7 +26,7 @@ function estimateHeight() {
         //IE 4 compatible
         myHeight = document.body.clientHeight;
     }
-    return myHeight;
+    return myHeight - offset;
 }
 
 var formAction = function(form, action) {
@@ -60,7 +61,7 @@ Ext.onReady(function() {
         autoScroll: true,
         enableKeyEvents: true,
         width: '100%',
-        height: estimateHeight(),
+        height: estimateHeight(40),
     });
 
     var form = new Ext.FormPanel({
@@ -79,7 +80,7 @@ Ext.onReady(function() {
     Ext.EventManager.onWindowResize(function() {
         form.doLayout();
         form.setHeight(estimateHeight());
-        textArea.setHeight(estimateHeight());
+        textArea.setHeight(estimateHeight(40));
     });
 });
         </script>

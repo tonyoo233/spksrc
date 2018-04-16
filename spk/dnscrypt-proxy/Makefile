@@ -1,6 +1,6 @@
 SPK_NAME = dnscrypt-proxy
-SPK_VERS = 2.0.9
-SPK_REV = 1
+SPK_VERS = 2.0.10
+SPK_REV = 0
 SPK_ICON = src/dnscrypt-proxy.png
 
 UNSUPPORTED_ARCHS = $(PPC_ARCHES)

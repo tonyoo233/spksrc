@@ -62,13 +62,13 @@ func auth() (string) {
 }
 
 func logError(str string) { // dump and die
-    fmt.Println("Status: 500 Internal server error\nContent-Type: text/html; charset=utf-8\n\n")
+    fmt.Println("Status: 500 Internal server error\nContent-Type: text/html; charset=utf-8\n")
     fmt.Println(str)
     os.Exit(0)
 }
 
 func logUnauthorised(str string) { // dump and die
-    fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n\n")
+    fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n")
     fmt.Println(str)
     os.Exit(0)
 }
@@ -158,6 +158,8 @@ func main() {
     if method == "POST" {
         if fileData := readPost(); fileData != "" {
             saveFile(configFile, fileData)
+            fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
+            return
         }
     }
 

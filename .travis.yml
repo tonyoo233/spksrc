@@ -15,6 +15,7 @@ env:
   - SYNOARCH=arch-hi3535-6.1
   - SYNOARCH=arch-ipq806x-1.1
   - SYNOARCH=arch-monaco-6.1
+  - SYNOARCH=arch-northstarplus-1.1
   - SYNOARCH=arch-qoriq-6.1
   - SYNOARCH=arch-rtd1296-6.1
   - SYNOARCH=arch-ppc853x-5.2

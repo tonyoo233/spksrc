@@ -1,7 +1,7 @@
 LICENSE
 =====
 
-Copyright (c) 2011, Sebastien Erard
+Copyright (c) 2011-2018, Sebastien Erard and [SynoCommunity contributors](https://github.com/SynoCommunity/spksrc/graphs/contributors)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

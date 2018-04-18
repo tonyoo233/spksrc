@@ -20,7 +20,7 @@ BETA = 1
 
 WIZARDS_DIR = src/wizard/
 DSM_UI_DIR = ui
-# CONF_DIR = src/conf
+CONF_DIR = src/conf # this file is useless as the "installer" script chooses it's own values
 
 SERVICE_USER = auto
 SERVICE_SETUP = src/service-setup.sh

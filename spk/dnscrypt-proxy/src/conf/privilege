@@ -1,8 +1,8 @@
 {
     "defaults": {
-        "run-as": "root"
+        "run-as": "package"
     },
-    "username": "dnscrypt",
+    "username": "sc-dnscrypt-proxy",
     "ctrl-script": [{
         "action": "preinst",
         "run-as": "root"
@@ -21,9 +21,11 @@
     }, {
         "action": "postupgrade",
         "run-as": "root"
-    }],
-    "Executable": [{
-        "realpath": "bin/dnscrypt-proxy",
+    }, {
+        "action": "start",
+        "run-as": "root"
+    }, {
+        "action": "stop",
         "run-as": "root"
     }]
 }

@@ -20,11 +20,11 @@ BETA = 1
 
 WIZARDS_DIR = src/wizard/
 DSM_UI_DIR = ui
-CONF_DIR = src/conf # this file is useless as the "installer" script chooses it's own values
+CONF_DIR = src/conf
 
 SERVICE_USER = auto
 SERVICE_SETUP = src/service-setup.sh
-SERVICE_PORT = 1053
+SERVICE_PORT = 53
 SERVICE_PORT_TITLE = DNS
 NO_SERVICE_SHORTCUT = true
 SERVICE_PORT_ALL_USERS = false

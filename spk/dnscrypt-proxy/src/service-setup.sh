@@ -10,6 +10,7 @@ service_prestart () {
     echo "Free port 53 from dnsmasq" >> "${LOG_FILE}"
     echo 'enable="yes"' > /etc/dhcpd/dhcpd-custom-custom.info
     /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
+    cd "$SVC_CWD" || exit 1
     ${DNSCRYPT_PROXY} --config "${CFG_FILE}" --pidfile "${PID_FILE}" --logfile "${LOG_FILE}" &
 }
 
@@ -59,8 +60,6 @@ service_postinst () {
 
     echo "Set dnsmasq settings" >> "${INST_LOG}"
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
-    echo 'enable="yes"' > /etc/dhcpd/dhcpd-custom-custom.info
-    /etc/rc.network nat-restart-dhcp >> "${INST_LOG}" 2>&1
 }
 
 service_postuninst () {

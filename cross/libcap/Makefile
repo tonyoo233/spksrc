@@ -19,7 +19,7 @@ COMPILE_INSTALL = libcap_install
 
 libcap_compile:
 	echo "-------- _makenames --------"
-	$(RUN) $(MAKE) -C libcap _makenames
+	$(RUN) $(MAKE) -C libcap _makenames CC="cc" # use the systems host compiler
 	echo "-------- libcap.a libcap.so.$(PKG_VERS) --------"
 	$(RUN) $(MAKE) -C libcap libcap.a libcap.so."$(PKG_VERS)" libcap.pc CC="$(CC)" LDSHARED="$(LDSHARED)" AR="$(AR)" RANLIB="$(RANLIB)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 	echo "-------- progs --------" # getpcaps fails

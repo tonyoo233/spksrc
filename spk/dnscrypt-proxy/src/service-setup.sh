@@ -3,8 +3,6 @@ DNSCRYPT_PROXY="${SYNOPKG_PKGDEST}/bin/dnscrypt-proxy"
 PID_FILE="${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.pid"
 CFG_FILE="${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml"
 EXAMPLE_FILES="${SYNOPKG_PKGDEST}/example-*"
-# SERVICE_COMMAND="${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE}"
-# SVC_BACKGROUND=y
 
 service_prestart () {
     echo "Free port 53 from dnsmasq" >> "${LOG_FILE}"

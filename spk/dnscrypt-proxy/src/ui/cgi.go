@@ -7,7 +7,6 @@ import (
     "strings"
     "os/exec"
     "io/ioutil"
-    "bufio"
     "errors"
     "html/template"
     "net/url"
@@ -110,13 +109,9 @@ func renderHtml(configFile string) {
 
 func getPost() (string) {
     // get data
-    s := bufio.NewScanner(os.Stdin)
-    var data string
-    for s.Scan() {
-        data+=s.Text()
-    }
+    bytes, err := ioutil.ReadAll(os.Stdin)
     // unescape url chars
-    data, err := url.QueryUnescape(data)
+    data, err := url.QueryUnescape(string(bytes))
     if err != nil {
         logError("bad data: "+data)
     }
@@ -158,8 +153,8 @@ func main() {
     if method == "POST" {
         if fileData := readPost(); fileData != "" {
             saveFile(configFile, fileData)
-            fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
-            return
+            // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
+            // return
         }
     }
 

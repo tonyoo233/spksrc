@@ -1,0 +1,151 @@
+#dnscrypt-proxy html, #dnscrypt-proxy body {
+    margin: 0;
+    font-family: verdana, tahoma, arial, helvetica, sans-serif;
+    font-size: 14px;
+}
+
+#dnscrypt-proxy form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#dnscrypt-proxy #fileSelect {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+
+#dnscrypt-proxy select::-ms-expand {
+    display: none; /* hide the default arrow in ie10 and ie11 */
+}
+#dnscrypt-proxy select:-moz-focusring { /* hide the dotted outline on selection in firefox */
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+#dnscrypt-proxy select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 162px;
+    border:1px solid #C8D2DC;
+    height: 24px;
+    line-height: 24px;
+    padding: 1px 3px 1px 8px;
+    box-sizing: initial;
+    cursor: pointer;
+    outline: none;
+    border-radius: 0;
+    box-shadow: inset 0px 1px 0px rgba(80,90,100,0.08);
+    background: url(/webman/3rdparty/dnscrypt-proxy/trigger.png) no-repeat #fff;
+    background-position: 148px -1px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#dnscrypt-proxy select:hover{
+    border-color: #b4bec8;
+    /*background-position: 122px -1px;*/
+
+}
+#dnscrypt-proxy select:focus{
+    border-color: #2E6C99;
+    /*background-position: 122px -1px;*/
+}
+
+#dnscrypt-proxy #fileContent {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    bottom: 45px;
+    /* clip top shadow*/
+    overflow: hidden;
+    /* show bottom border again*/
+    padding-bottom: 1px;
+    box-sizing: border-box;
+}
+/* Shadow */
+#dnscrypt-proxy #fileContent:before {
+    box-shadow: 0 1px 10px rgba(0,0,0,.5);
+    content: "";
+    width: 100%;
+    height: 1px;
+    display: block;
+    position: relative;
+    top: 1px;
+}
+
+#dnscrypt-proxy textarea {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: block;
+    box-sizing: border-box;
+    font-family: monospace;
+    overflow: auto;
+    padding: 2px 3px;
+    border: 1px solid #b5b8c8;
+    resize: none;
+    outline: none;
+    font-size: 12px;
+}
+
+#dnscrypt-proxy textarea:active, #dnscrypt-proxy textarea:focus {
+    border: 1px solid #7eadd9;
+}
+
+#dnscrypt-proxy .btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: auto;
+    white-space: nowrap;
+    border: solid 1px #c8d2dc;
+    background-image: linear-gradient(#f5faff, #e7ecf1);
+    background-color: #e7ecf1;
+    text-align: center;
+    cursor: pointer;
+    padding: 2px 21px;
+    height: 28px;
+    display: block;
+    color: #000;
+    font-family: arial, tahoma, verdana, helvetica;
+    font-size: 13px;
+    margin-right: 7px;
+    border-radius: 3px;
+    outline: none;
+}
+
+#dnscrypt-proxy .btn:hover {
+    border-color: #b4bec8;
+    background-color: #e7ecf1;
+}
+
+#dnscrypt-proxy .btn:active {
+    border-color: #b4bec8;
+    background-image: linear-gradient(#ebf0f5, #e1e6eb);
+    background-color: #e1e6eb;
+}
+
+#dnscrypt-proxy .primary {
+    border-color: #215fa6;
+    background-image: linear-gradient(#3d80cc, #2466b2);
+    background-color: #2466b2;
+    color: #fff;
+}
+
+#dnscrypt-proxy .primary:hover {
+    border-color: #0e498c;
+    background-image: linear-gradient(#337acc, #125db2);
+    background-color: #125db2;
+}
+
+#dnscrypt-proxy .primary:active {
+    border-color: #0e498c;
+    background-image: linear-gradient(#266ebf, #1156a6);
+    background-color: #1156a6;
+}

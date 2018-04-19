@@ -10,6 +10,7 @@ service_prestart () {
     /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
     cd "$SVC_CWD" || exit 1
     ${DNSCRYPT_PROXY} --config "${CFG_FILE}" --pidfile "${PID_FILE}" --logfile "${LOG_FILE}" &
+    # su "${EFF_USER}" -s /bin/false -c "cd ${SVC_CWD}; ${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE} --logfile ${LOG_FILE}" &
 }
 
 service_poststop () {
@@ -46,7 +47,7 @@ service_postinst () {
     fi
 
     echo "Setting up the Web GUI..." >> "${INST_LOG}"
-    ln -s "${SYNOPKG_PKGDEST}/ui" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
+    ln -s "${SYNOPKG_PKGDEST}/ui/" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
 
     echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
     ## Allow cgi user to write to this file

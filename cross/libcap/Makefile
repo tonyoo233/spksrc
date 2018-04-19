@@ -16,13 +16,6 @@ COMPILE_TARGET = libcap_compile
 COMPILE_INSTALL = libcap_install
 .PHONY: libcap_install libcap_compile
 
-libcap_install: libcap_compile
-	echo "-------- install --------"
-	$(create_target_dir)
-	$(RUN) mkdir -p -m 0755 "$(STAGING_INSTALL_PREFIX)/sbin"
-	$(RUN) install -m 0755 progs/capsh "$(STAGING_INSTALL_PREFIX)/sbin/capsh"
-	$(RUN) install -m 0755 progs/getcap "$(STAGING_INSTALL_PREFIX)/sbin/getcap"
-	$(RUN) install -m 0755 progs/setcap "$(STAGING_INSTALL_PREFIX)/sbin/setcap"
 
 libcap_compile:
 	echo "-------- _makenames --------"
@@ -31,6 +24,13 @@ libcap_compile:
 	$(RUN) $(MAKE) -C libcap libcap.a libcap.so."$(PKG_VERS)" libcap.pc CC="$(CC)" LDSHARED="$(LDSHARED)" AR="$(AR)" RANLIB="$(RANLIB)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 	echo "-------- progs --------" # getpcaps fails
 	$(RUN) $(MAKE) -C progs capsh getcap setcap CC="$(CC)" LD="$(LD)" LDSHARED="$(LDSHARED)" AR="$(AR)" RANLIB="$(RANLIB)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+
+libcap_install: libcap_compile
+	echo "-------- install --------"
+	$(RUN) mkdir -p -m 0755 "$(STAGING_INSTALL_PREFIX)/sbin"
+	$(RUN) install -m 0755 progs/capsh "$(STAGING_INSTALL_PREFIX)/sbin/capsh"
+	$(RUN) install -m 0755 progs/getcap "$(STAGING_INSTALL_PREFIX)/sbin/getcap"
+	$(RUN) install -m 0755 progs/setcap "$(STAGING_INSTALL_PREFIX)/sbin/setcap"
 
 include ../../mk/spksrc.cross-cc.mk
 

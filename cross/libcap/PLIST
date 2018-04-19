@@ -1,0 +1,7 @@
+bin:sbin/capsh
+bin:sbin/getcap
+bin:sbin/setcap
+lnk:lib64/libcap.so
+lnk:lib64/libcap.so.2
+lib:lib64/libcap.so.2.25
+lib:lib64/libcap.a

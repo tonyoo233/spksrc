@@ -5,7 +5,7 @@ SPK_ICON = src/dnscrypt-proxy.png
 
 UNSUPPORTED_ARCHS = $(PPC_ARCHES)
 
-DEPENDS = cross/$(SPK_NAME)
+DEPENDS = cross/$(SPK_NAME) cross/libcap
 
 MAINTAINER = publicarray
 DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTP/2. https://github.com/jedisct1/dnscrypt-proxy

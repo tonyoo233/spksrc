@@ -13,13 +13,11 @@ LICENSE  = GPL-2.0
 
 export PREFIX=$(STAGING_INSTALL_PREFIX)
 
-CONFIGURE_TARGET = nethogs_configure
+CONFIGURE_TARGET = nope
 COMPILE_TARGET = nethogs_compile
-.PHONY: nethogs_configure nethogs_compile
+.PHONY: nethogs_compile
 
-nethogs_configure: install # strangely this works
-
-nethogs_compile: nethogs_configure
+nethogs_compile:
 	$(RUN) $(MAKE) nethogs
 
 include ../../mk/spksrc.cross-cc.mk

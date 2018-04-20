@@ -1,21 +1,21 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "flag"
-    "os/exec"
-    "io/ioutil"
     "errors"
+    "flag"
+    "fmt"
     "html/template"
+    "io/ioutil"
     "net/url"
+    "os"
+    "os/exec"
     "regexp"
 )
 
 var dev *bool
 
 type Page struct {
-    Title string
+    Title    string
     FileData string
 }
 
@@ -38,8 +38,7 @@ func token() (string, error) {
     return string(token[1]), nil
 }
 
-
-func auth() (string) {
+func auth() string {
     token, err := token()
     if err != nil {
         logUnauthorised(err.Error())
@@ -71,7 +70,7 @@ func logUnauthorised(str string) { // dump and die
     os.Exit(0)
 }
 
-func loadFile(file string) (string) {
+func loadFile(file string) string {
     data, err := ioutil.ReadFile(file)
     if err != nil {
         logError(err.Error())
@@ -105,8 +104,7 @@ func renderHtml(configFile string) {
     }
 }
 
-
-func getPost() (url.Values) { // todo: stop on a max size (10mb?)
+func readPost() url.Values { // todo: stop on a max size (10mb?)
     // fixme: check/generate csrf token
     bytes, err := ioutil.ReadAll(os.Stdin)
     if err != nil {
@@ -120,33 +118,24 @@ func getPost() (url.Values) { // todo: stop on a max size (10mb?)
     return q
 }
 
-func readPost() (string) {
-    params := getPost()
-    return params.Get("file")
-}
-
 func main() {
     // Todo:
     // fix-up error handling with correct http responses
     // worry about csrf
     // improve css
 
-    dev = flag.Bool("dev", false, "Turns Authentication check off")
+    dev = flag.Bool("dev", false, "Turns Authentication checks off")
     flag.Parse()
 
-    configFile := "/var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml"
-
+    configFile := "example-dnscrypt-proxy.toml"
     if !*dev {
         auth()
+        configFile = "/var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml"
     }
-    if *dev {
-        configFile = "example-dnscrypt-proxy.toml"
-    }
-
 
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" || method == "PUT" || method == "PATCH" {
-        if fileData := readPost(); fileData != "" {
+        if fileData := readPost().Get("file"); fileData != "" {
             saveFile(configFile, fileData)
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return

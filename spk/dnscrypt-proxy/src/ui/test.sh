@@ -9,6 +9,9 @@ urlencode() {
 
 # ---------------------------------------------------------------------------
 
+## lint
+# gofmt -s -w cgi.go
+
 ## build
 # go get github.com/BurntSushi/toml
 go build -ldflags "-s -w" -o index.cgi cgi.go

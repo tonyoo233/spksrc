@@ -4,7 +4,6 @@ import (
     "fmt"
     "os"
     "flag"
-    "strings"
     "os/exec"
     "io/ioutil"
     "errors"
@@ -107,27 +106,23 @@ func renderHtml(configFile string) {
 }
 
 
-func getPost() (string) {
-    // get data
+func getPost() (url.Values) { // todo: stop on a max size (10mb?)
+    // fixme: check/generate csrf token
     bytes, err := ioutil.ReadAll(os.Stdin)
-    // unescape url chars
-    data, err := url.QueryUnescape(string(bytes))
     if err != nil {
-        logError("bad data: "+data)
+        logError(err.Error())
     }
 
-    return data
+    q, err := url.ParseQuery(string(bytes))
+    if err != nil {
+        logError(err.Error())
+    }
+    return q
 }
 
 func readPost() (string) {
     params := getPost()
-    pararmSearch := "file="
-
-    if (strings.HasPrefix(params, pararmSearch)) {
-        fileData := string([]rune(params)[len(pararmSearch):])
-        return fileData
-    }
-    return ""
+    return params.Get("file")
 }
 
 func main() {
@@ -150,7 +145,7 @@ func main() {
 
 
     method := os.Getenv("REQUEST_METHOD")
-    if method == "POST" {
+    if method == "POST" || method == "PUT" || method == "PATCH" {
         if fileData := readPost(); fileData != "" {
             saveFile(configFile, fileData)
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")

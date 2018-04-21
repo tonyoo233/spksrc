@@ -127,7 +127,7 @@ func renderHtml(configFile string, successMessage string, errorMessage string) {
     page.ErrorMessage = errorMessage
     page.SuccessMessage = successMessage
     fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n")
-    tmpl.Execute(os.Stdout, page)
+    err = tmpl.Execute(os.Stdout, page)
     if err != nil {
         logError(err.Error())
     }

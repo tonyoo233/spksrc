@@ -112,7 +112,7 @@
 
 #dnscrypt-proxy textarea {
     overflow: auto;
-    visibility: hidden;
+    opacity: 0;
     padding: 2px 3px;
 }
 

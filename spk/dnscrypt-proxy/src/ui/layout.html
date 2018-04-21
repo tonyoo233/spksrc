@@ -34,4 +34,11 @@
             <input class="btn primary" type="submit" value="Apply">
         </form>
     </body>
+    <script src="codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <script src="codemirror/mode/toml/toml.js"></script>
+    <script type="text/javascript">
+        textArea = document.getElementsByTagName('textarea')[0]
+        var cm = CodeMirror.fromTextArea(textArea);
+    </script>
 </html>

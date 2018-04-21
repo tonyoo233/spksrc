@@ -4,12 +4,29 @@
     font-size: 14px;
 }
 
-#dnscrypt-proxy form {
+#dnscrypt-proxy .message {
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%;
+    top: 3px;
+    right: 10px;
+}
+
+#dnscrypt-proxy .success {
+    color: #29D219;
+    animation: 1s 4s forwards fade-out;
+    -webkit-animation: 1s 4s forwards fade-out;
+}
+
+#dnscrypt-proxy .error {
+    color: #f00;
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 #dnscrypt-proxy #fileSelect {
@@ -98,10 +115,19 @@
     border: 1px solid #7eadd9;
 }
 
-#dnscrypt-proxy .btn {
+#dnscrypt-proxy .fileSelector .btn {
+    position: fixed;
+    top: 10px;
+    left: 220px;
+}
+
+#dnscrypt-proxy .fileEditor .btn {
     position: fixed;
     bottom: 10px;
     right: 10px;
+}
+
+#dnscrypt-proxy .btn {
     width: auto;
     white-space: nowrap;
     border: solid 1px #c8d2dc;

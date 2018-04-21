@@ -16,13 +16,14 @@ import (
 
 var dev *bool
 var rootDir string
-var configFile string
-
+var files map[string]string
 type Page struct {
     Title    string
     FileData string
     ErrorMessage string
     SuccessMessage string
+    File string
+    Files map[string]string
 }
 
 func token() (string, error) {
@@ -102,20 +103,20 @@ func saveFile(file string, data string) {
 
 func checkConfFile() {
     var errbuf bytes.Buffer
-    cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", configFile+".tmp")
+    cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", files["config"]+".tmp")
     cmd.Stderr = &errbuf
 
     out, err := cmd.Output()
     if err != nil {
         //logError(err.Error(), string(out), errbuf.String())
-        renderHtml(configFile, "", string(out)+errbuf.String())
+        renderHtml(files["config"], "", string(out)+errbuf.String())
         os.Exit(0)
     }
 }
 
-func renderHtml(configFile string, successMessage string, errorMessage string) {
+func renderHtml(file string, successMessage string, errorMessage string) {
     var page Page
-    fileData := loadFile(configFile)
+    fileData := loadFile(rootDir+file)
 
     tmpl, err := template.ParseFiles("layout.html")
     if err != nil {
@@ -123,6 +124,8 @@ func renderHtml(configFile string, successMessage string, errorMessage string) {
     }
 
     page.Title = "DNSCrypt-proxy"
+    page.File = file
+    page.Files = files
     page.FileData = fileData
     page.ErrorMessage = errorMessage
     page.SuccessMessage = successMessage
@@ -132,6 +135,15 @@ func renderHtml(configFile string, successMessage string, errorMessage string) {
         logError(err.Error())
     }
     os.Exit(0)
+}
+
+func readGet() url.Values {
+    queryStr := os.Getenv("QUERY_STRING")
+    q, err := url.ParseQuery(queryStr)
+    if err != nil {
+        logError(err.Error())
+    }
+    return q
 }
 
 func readPost() url.Values { // todo: stop on a max size (10mb?)
@@ -163,16 +175,26 @@ func main() {
         rootDir = "/var/packages/dnscrypt-proxy/target"
     }
 
-    configFile = rootDir + "/var/dnscrypt-proxy.toml"
+    files = make(map[string]string)
+    files["config"] = "/var/dnscrypt-proxy.toml"
+    files["blacklist"] = "/var/blacklist.txt"
+    files["cloaking"] = "/var/cloaking-rules.txt"
+    files["forwarding"] = "/var/forwarding-rules.txt"
+    files["whitelist"] = "/var/whitelist.txt"
+
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" || method == "PUT" || method == "PATCH" {
-        if fileData := readPost().Get("file"); fileData != "" {
-            saveFile(configFile, fileData)
-            renderHtml(configFile, "Saved Successfully!", "")
+        if fileData := readPost().Get("fileContent"); fileData != "" {
+            saveFile(files["config"], fileData)
+            renderHtml(files["config"], "Saved Successfully!", "")
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return
         }
     }
 
-    renderHtml(configFile, "", "")
+    if file := readGet().Get("file"); file != "" {
+        renderHtml(files[file], "", "")
+    }
+
+    renderHtml(files["config"], "", "")
 }

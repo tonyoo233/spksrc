@@ -113,6 +113,7 @@
 
 #dnscrypt-proxy textarea {
     overflow: auto;
+    visibility: hidden;
 }
 
 #dnscrypt-proxy textarea:active, #dnscrypt-proxy .CodeMirror-focused, #dnscrypt-proxy textarea:focus {

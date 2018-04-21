@@ -39,6 +39,9 @@
     <script src="codemirror/mode/toml/toml.js"></script>
     <script type="text/javascript">
         textArea = document.getElementsByTagName('textarea')[0]
+        if (typeof CodeMirror == "undefined") {
+            textArea.style.visibility = "visible"
+        }
         CodeMirror.fromTextArea(textArea, {
             lineNumbers: true
         });

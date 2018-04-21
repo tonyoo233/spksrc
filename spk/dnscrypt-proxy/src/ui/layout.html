@@ -39,6 +39,8 @@
     <script src="codemirror/mode/toml/toml.js"></script>
     <script type="text/javascript">
         textArea = document.getElementsByTagName('textarea')[0]
-        var cm = CodeMirror.fromTextArea(textArea);
+        CodeMirror.fromTextArea(textArea, {
+            lineNumbers: true
+        });
     </script>
 </html>

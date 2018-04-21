@@ -19,11 +19,14 @@ setup() {
     done
 }
 
+fixLinks() {
+    sed -i '' -e "s@/webman/3rdparty/dnscrypt-proxy/style\\.css@../style\\.css@" $1
+}
+
 if [ ! -d test ]; then
     echo "Preparing test folder.."
     setup
 fi
-
 
 ## lint
 # gofmt -s -w cgi.go
@@ -39,14 +42,17 @@ go build -ldflags "-s -w" -o index.cgi cgi.go
 export REQUEST_METHOD=GET
 export SERVER_PROTOCOL=HTTP/1.1
 ./index.cgi --dev | tail -n +4 > test/index.html
-sed -i '' -e "s@/webman/3rdparty/dnscrypt-proxy/style\\.css@../style\\.css@" test/index.html
+fixLinks test/index.html
 
 export REQUEST_METHOD=POST
 data="$(urlencode "$(cat test/var/dnscrypt-proxy.toml)")"
 # echo "$data" > post.html
 
 # echo "ListenAddresses=0.0.0.0%3A1053+&ServerNames=cloudflare+google+ " | ./index.cgi --dev
-echo file="$data" | ./index.cgi --dev | tail -n +4 > test/post.html
-sed -i '' -e "s@/webman/3rdparty/dnscrypt-proxy/style\\.css@../style\\.css@" test/post.html
-# echo fileName=config&file="$data" | ./index.cgi --dev | tail -n +4 > post.html
-# sed -i '' -e "s@/webman/3rdparty/dnscrypt-proxy/style\\.css@style\\.css@" post.html
+echo "file=config&fileContent=$data" | ./index.cgi --dev | tail -n +4 > test/post.html
+fixLinks test/post.html
+
+export REQUEST_METHOD=GET
+export QUERY_STRING=file=blacklist
+./index.cgi --dev | tail -n +4 > test/get.html
+fixLinks test/get.html

@@ -16,7 +16,7 @@
                 <select name="file">
                     {{- $File := .File -}}
                     {{- range $key, $value := .Files -}}
-                        {{- if eq $File $value }}
+                        {{- if eq $File $key }}
                     <option value="{{ $key }}" selected>{{ $value }}</option>
                         {{- else }}
                     <option value="{{ $key }}">{{ $value }}</option>
@@ -27,6 +27,7 @@
             <input class="btn" type="submit" value="Open">
         </form>
         <form method="post" class="fileEditor">
+            <input type="hidden" name="file" value="{{.File}}">
             <div id="fileContent">
                 <textarea name="fileContent" autocomplete="off">{{.FileData}}</textarea>
             </div>

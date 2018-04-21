@@ -56,6 +56,7 @@ service_postinst () {
     # Less than ideal solution, ToDo: find something better
     chmod 0666 "${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml" >> "${INST_LOG}" 2>&1
     chmod 0666 "${SYNOPKG_PKGDEST}"/var/*.txt >> "${INST_LOG}" 2>&1
+    chmod 0777 "${SYNOPKG_PKGDEST}"/var/ >> "${INST_LOG}" 2>&1
 
     echo "Set dnsmasq settings" >> "${INST_LOG}"
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
@@ -67,5 +68,18 @@ service_postuninst () {
     rm -f /etc/dhcpd/dhcpd-custom-custom.conf
     rm -f /etc/dhcpd/dhcpd-custom-custom.info
     /etc/rc.network nat-restart-dhcp
+}
+
+service_preupgrade () {
+    echo "Setting up the Web GUI..." >> "${INST_LOG}"
+    ln -s "${SYNOPKG_PKGDEST}/ui/" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
+
+    echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
+    chmod 0666 "${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml" >> "${INST_LOG}" 2>&1
+    chmod 0666 "${SYNOPKG_PKGDEST}"/var/*.txt >> "${INST_LOG}" 2>&1
+    chmod 0777 "${SYNOPKG_PKGDEST}"/var/ >> "${INST_LOG}" 2>&1
+
+    echo "Set dnsmasq settings" >> "${INST_LOG}"
+    echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
 }
 # rm -drf work-ipq806x-1.1/scripts && make arch-ipq806x-1.1

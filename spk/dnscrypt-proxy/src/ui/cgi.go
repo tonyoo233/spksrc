@@ -53,8 +53,8 @@ func auth() string {
 
     // X-SYNO-TOKEN:9WuK4Cf50Vw7Q
     // http://192.168.1.1:5000/webman/3rdparty/DownloadStation/webUI/downloadman.cgi?SynoToken=9WuK4Cf50Vw7Q
-    os.Setenv("QUERY_STRING", "SynoToken="+token)
     tempQueryEnv := os.Getenv("QUERY_STRING")
+    os.Setenv("QUERY_STRING", "SynoToken="+token)
     cmd := exec.Command("/usr/syno/synoman/webman/modules/authenticate.cgi")
     cmdOut, err := cmd.Output()
     if err != nil {
@@ -85,38 +85,48 @@ func loadFile(file string) string {
     return string(data)
 }
 
-func saveFile(file string, data string) {
-    err := ioutil.WriteFile(file+".tmp", []byte(data), 0644)
+func saveFile(fileKey string, data string) {
+    err := ioutil.WriteFile(rootDir+files[fileKey]+".tmp", []byte(data), 0644)
     if err != nil {
         logError(err.Error())
     }
 
-    checkConfFile()
+    if (fileKey == "config") {
+        checkConfFile(true)
+    }
 
-    err = os.Rename(file+".tmp", file)
+    err = os.Rename(rootDir+files[fileKey]+".tmp", rootDir+files[fileKey])
     if err != nil {
         logError(err.Error())
+    }
+
+    if (fileKey != "config") {
+        checkConfFile(false)
     }
 
     return
 }
 
-func checkConfFile() {
+func checkConfFile(tmp bool) {
     var errbuf bytes.Buffer
-    cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", files["config"]+".tmp")
+    var tmpExt string
+    if (tmp) {
+        tmpExt = ".tmp"
+    }
+
+    cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", rootDir+files["config"]+tmpExt)
     cmd.Stderr = &errbuf
 
     out, err := cmd.Output()
     if err != nil {
-        //logError(err.Error(), string(out), errbuf.String())
-        renderHtml(files["config"], "", string(out)+errbuf.String())
+        renderHtml("config", "", string(out)+errbuf.String()) // out = stdout,  errbuf = stderr
         os.Exit(0)
     }
 }
 
-func renderHtml(file string, successMessage string, errorMessage string) {
+func renderHtml(fileKey string, successMessage string, errorMessage string) {
     var page Page
-    fileData := loadFile(rootDir+file)
+    fileData := loadFile(rootDir+files[fileKey])
 
     tmpl, err := template.ParseFiles("layout.html")
     if err != nil {
@@ -124,7 +134,7 @@ func renderHtml(file string, successMessage string, errorMessage string) {
     }
 
     page.Title = "DNSCrypt-proxy"
-    page.File = file
+    page.File = fileKey
     page.Files = files
     page.FileData = fileData
     page.ErrorMessage = errorMessage
@@ -162,9 +172,8 @@ func readPost() url.Values { // todo: stop on a max size (10mb?)
 
 func main() {
     // Todo:
-    // fix-up error handling with correct http responses
+    // fix-up error handling with correct http responses (add --debug flag?/Synology's notifications?)
     // worry about csrf
-    // improve css
 
     dev = flag.Bool("dev", false, "Turns Authentication checks off")
     flag.Parse()
@@ -183,18 +192,22 @@ func main() {
     files["whitelist"] = "/var/whitelist.txt"
 
     method := os.Getenv("REQUEST_METHOD")
-    if method == "POST" || method == "PUT" || method == "PATCH" {
-        if fileData := readPost().Get("fileContent"); fileData != "" {
-            saveFile(files["config"], fileData)
-            renderHtml(files["config"], "Saved Successfully!", "")
+    if method == "POST" || method == "PUT" || method == "PATCH" { // POST
+        postData := readPost()
+        fileData := postData.Get("fileContent")
+        fileKey := postData.Get("file")
+        if fileData != "" && fileKey != "" {
+            saveFile(fileKey, fileData)
+            renderHtml(fileKey, "File saved successfully!", "")
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return
         }
+        renderHtml("config", "", "No valid data submitted.")
     }
 
-    if file := readGet().Get("file"); file != "" {
-        renderHtml(files[file], "", "")
+    if fileKey := readGet().Get("file"); method == "GET" && fileKey != "" { // GET
+        renderHtml(fileKey, "", "")
     }
 
-    renderHtml(files["config"], "", "")
+    renderHtml("config", "", "")
 }

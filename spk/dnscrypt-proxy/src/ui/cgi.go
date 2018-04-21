@@ -10,13 +10,19 @@ import (
     "os"
     "os/exec"
     "regexp"
+    "strings"
+    "bytes"
 )
 
 var dev *bool
+var rootDir string
+var configFile string
 
 type Page struct {
     Title    string
     FileData string
+    ErrorMessage string
+    SuccessMessage string
 }
 
 func token() (string, error) {
@@ -58,15 +64,15 @@ func auth() string {
     return string(cmdOut)
 }
 
-func logError(str string) { // dump and die
+func logError(str ...string) { // dump and die
     fmt.Println("Status: 500 Internal server error\nContent-Type: text/html; charset=utf-8\n")
-    fmt.Println(str)
+    fmt.Println(strings.Join(str, ", "))
     os.Exit(0)
 }
 
-func logUnauthorised(str string) { // dump and die
+func logUnauthorised(str ...string) { // dump and die
     fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n")
-    fmt.Println(str)
+    fmt.Println(strings.Join(str, ", "))
     os.Exit(0)
 }
 
@@ -79,14 +85,35 @@ func loadFile(file string) string {
 }
 
 func saveFile(file string, data string) {
-    err := ioutil.WriteFile(file, []byte(data), 0644)
+    err := ioutil.WriteFile(file+".tmp", []byte(data), 0644)
     if err != nil {
         logError(err.Error())
     }
+
+    checkConfFile()
+
+    err = os.Rename(file+".tmp", file)
+    if err != nil {
+        logError(err.Error())
+    }
+
     return
 }
 
-func renderHtml(configFile string) {
+func checkConfFile() {
+    var errbuf bytes.Buffer
+    cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", configFile+".tmp")
+    cmd.Stderr = &errbuf
+
+    out, err := cmd.Output()
+    if err != nil {
+        //logError(err.Error(), string(out), errbuf.String())
+        renderHtml(configFile, "", string(out)+errbuf.String())
+        os.Exit(0)
+    }
+}
+
+func renderHtml(configFile string, successMessage string, errorMessage string) {
     var page Page
     fileData := loadFile(configFile)
 
@@ -97,11 +124,14 @@ func renderHtml(configFile string) {
 
     page.Title = "DNSCrypt-proxy"
     page.FileData = fileData
+    page.ErrorMessage = errorMessage
+    page.SuccessMessage = successMessage
     fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n")
     tmpl.Execute(os.Stdout, page)
     if err != nil {
         logError(err.Error())
     }
+    os.Exit(0)
 }
 
 func readPost() url.Values { // todo: stop on a max size (10mb?)
@@ -127,20 +157,22 @@ func main() {
     dev = flag.Bool("dev", false, "Turns Authentication checks off")
     flag.Parse()
 
-    configFile := "example-dnscrypt-proxy.toml"
+    rootDir = "test"
     if !*dev {
         auth()
-        configFile = "/var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml"
+        rootDir = "/var/packages/dnscrypt-proxy/target"
     }
 
+    configFile = rootDir + "/var/dnscrypt-proxy.toml"
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" || method == "PUT" || method == "PATCH" {
         if fileData := readPost().Get("file"); fileData != "" {
             saveFile(configFile, fileData)
+            renderHtml(configFile, "Saved Successfully!", "")
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return
         }
     }
 
-    renderHtml(configFile)
+    renderHtml(configFile, "", "")
 }

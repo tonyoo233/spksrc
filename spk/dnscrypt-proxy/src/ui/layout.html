@@ -7,6 +7,10 @@
         <link rel="stylesheet" type="text/css" href="/webman/3rdparty/dnscrypt-proxy/style.css">
     </head>
     <body>
+        <div>
+            <p>{{.ErrorMessage}}</p>
+            <p>{{.SuccessMessage}}</p>
+        </div>
         <form method="post">
             <!-- <span id="fileSelect">File:
                 <select name="fileName">
@@ -15,8 +19,8 @@
                     <option value="cloaking">cloaking-rules.txt</option>
                     <option value="forwarding">forwarding-rules.txt</option>
                     <option value="whitelist">whitelist.txt</option>
-                </select> -->
-            </span>
+                </select>
+            </span> -->
             <div id="fileContent">
                 <textarea name="file" autocomplete="off">{{.FileData}}</textarea>
             </div>

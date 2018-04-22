@@ -1,6 +1,8 @@
 package main
 
 import (
+    "bytes"
+    "encoding/json"
     "errors"
     "flag"
     "fmt"
@@ -11,20 +13,19 @@ import (
     "os/exec"
     "regexp"
     "strings"
-    "bytes"
-    "encoding/json"
 )
 
 var dev *bool
 var rootDir string
 var files map[string]string
+
 type Page struct {
-    Title    string
-    FileData string
-    ErrorMessage string
+    Title          string
+    FileData       string
+    ErrorMessage   string
     SuccessMessage string
-    File string
-    Files map[string]string
+    File           string
+    Files          map[string]string
 }
 
 type AppPrivilege struct {
@@ -34,7 +35,7 @@ type Session struct {
     Is_admin bool `json:"is_admin"`
 }
 type AuthJson struct {
-    Session Session `json:"session"`
+    Session      Session `json:"session"`
     AppPrivilege AppPrivilege
 }
 
@@ -94,7 +95,7 @@ func auth() string {
         logUnauthorised(err.Error())
     }
 
-    is_admin := jsonData.Session.Is_admin // Session.is_admin:true
+    is_admin := jsonData.Session.Is_admin              // Session.is_admin:true
     is_permitted := jsonData.AppPrivilege.Is_permitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
     if !(is_admin || is_permitted) {
         notFound()
@@ -135,7 +136,7 @@ func saveFile(fileKey string, data string) {
         logError(err.Error())
     }
 
-    if (fileKey == "config") {
+    if fileKey == "config" {
         checkConfFile(true)
     }
 
@@ -144,7 +145,7 @@ func saveFile(fileKey string, data string) {
         logError(err.Error())
     }
 
-    if (fileKey != "config") {
+    if fileKey != "config" {
         checkConfFile(false)
     }
 
@@ -154,7 +155,7 @@ func saveFile(fileKey string, data string) {
 func checkConfFile(tmp bool) {
     var errbuf bytes.Buffer
     var tmpExt string
-    if (tmp) {
+    if tmp {
         tmpExt = ".tmp"
     }
 
@@ -170,7 +171,7 @@ func checkConfFile(tmp bool) {
 
 func renderHtml(fileKey string, successMessage string, errorMessage string) {
     var page Page
-    fileData := loadFile(rootDir+files[fileKey])
+    fileData := loadFile(rootDir + files[fileKey])
 
     tmpl, err := template.ParseFiles("layout.html")
     if err != nil {

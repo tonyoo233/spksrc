@@ -12,7 +12,7 @@
             <p class="success">{{.SuccessMessage}}</p>
         </div>
         <form method="get" class="fileSelector">
-            <span id="fileSelect">File:
+            <span id="fileSelect">
                 <select name="file">
                     {{- $File := .File -}}
                     {{- range $key, $value := .Files -}}
@@ -24,14 +24,14 @@
                     {{- end }}
                 </select>
             </span>
-            <input class="btn" type="submit" value="Open">
+            <!-- <input class="btn" type="submit" value="Open"> -->
         </form>
         <form method="post" class="fileEditor">
             <input type="hidden" name="file" value="{{.File}}">
             <div id="fileContent">
                 <textarea name="fileContent" autocomplete="off">{{.FileData}}</textarea>
             </div>
-            <input class="btn primary" type="submit" value="Apply">
+            <input class="btn primary" type="submit" value="Save">
         </form>
     </body>
     <script src="codemirror/lib/codemirror.js"></script>
@@ -45,5 +45,17 @@
         CodeMirror.fromTextArea(textArea, {
             lineNumbers: true
         });
+    </script>
+    <script type="text/javascript">
+        function setGetParameter (key, value) {
+            var baseUrl = [location.protocol, '//', location.host, location.pathname].join('')
+            var param = '?' + key + '=' + value
+            document.location = baseUrl+param
+        }
+
+        select = document.getElementsByTagName('select')[0]
+        select.addEventListener('change', function(e) {
+            setGetParameter(e.target.name, e.target.value)
+        }, false);
     </script>
 </html>

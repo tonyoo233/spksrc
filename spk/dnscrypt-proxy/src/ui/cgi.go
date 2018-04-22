@@ -12,6 +12,7 @@ import (
     "regexp"
     "strings"
     "bytes"
+    "encoding/json"
 )
 
 var dev *bool
@@ -26,12 +27,24 @@ type Page struct {
     Files map[string]string
 }
 
+type AppPrivilege struct {
+    Is_permitted bool `json:"SYNO.SDS.DNSCryptProxy.Application"`
+}
+type Session struct {
+    Is_admin bool `json:"is_admin"`
+}
+type AuthJson struct {
+    Session Session `json:"session"`
+    AppPrivilege AppPrivilege
+}
+
 func token() (string, error) {
     cmd := exec.Command("/usr/syno/synoman/webman/login.cgi")
     cmdOut, err := cmd.Output()
     if err != nil && err.Error() != "exit status 255" { // in the Synology world, error code 255 apparently means success!
         return string(cmdOut), err
     }
+    // cmdOut = bytes.TrimLeftFunc(cmdOut, findJson)
 
     // Content-Type: text/html [..] { "SynoToken" : "GqHdJil0ZmlhE", "result" : "success", "success" : true }
     r, err := regexp.Compile("SynoToken\" *: *\"([^\"]+)\"")
@@ -45,6 +58,13 @@ func token() (string, error) {
     return string(token[1]), nil
 }
 
+func findJson(r rune) bool {
+    if r == '{' {
+        return false
+    }
+    return true
+}
+
 func auth() string {
     token, err := token()
     if err != nil {
@@ -56,12 +76,31 @@ func auth() string {
     tempQueryEnv := os.Getenv("QUERY_STRING")
     os.Setenv("QUERY_STRING", "SynoToken="+token)
     cmd := exec.Command("/usr/syno/synoman/webman/modules/authenticate.cgi")
+    user, err := cmd.Output()
+    if err != nil && string(user) == "" {
+        logUnauthorised(err.Error())
+    }
+
+    // check permissions
+    cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi")
     cmdOut, err := cmd.Output()
     if err != nil {
         logUnauthorised(err.Error())
     }
-    os.Setenv("QUERY_STRING", tempQueryEnv)
+    cmdOut = bytes.TrimLeftFunc(cmdOut, findJson)
 
+    var jsonData AuthJson
+    if err := json.Unmarshal(cmdOut, &jsonData); err != nil {
+        logUnauthorised(err.Error())
+    }
+
+    is_admin := jsonData.Session.Is_admin // Session.is_admin:true
+    is_permitted := jsonData.AppPrivilege.Is_permitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
+    if !(is_admin || is_permitted) {
+        notFound()
+    }
+
+    os.Setenv("QUERY_STRING", tempQueryEnv)
     return string(cmdOut)
 }
 
@@ -74,6 +113,11 @@ func logError(str ...string) { // dump and die
 func logUnauthorised(str ...string) { // dump and die
     fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n")
     fmt.Println(strings.Join(str, ", "))
+    os.Exit(0)
+}
+
+func notFound() {
+    fmt.Println("Status: 404 Not Found\nContent-Type: text/html; charset=utf-8\n")
     os.Exit(0)
 }
 

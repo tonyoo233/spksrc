@@ -24,7 +24,9 @@
                     {{- end }}
                 </select>
             </span>
-            <!-- <input class="btn" type="submit" value="Open"> -->
+        </form>
+        <form method="post" class="updateBlacklist">
+            <input class="btn" type="submit" name="generateBlacklist" value="Generate Blacklist">
         </form>
         <form method="post" class="fileEditor">
             <input type="hidden" name="file" value="{{.File}}">
@@ -39,7 +41,7 @@
     <script src="codemirror/mode/toml/toml.js"></script>
     <script type="text/javascript">
         textArea = document.getElementsByTagName('textarea')[0]
-        if (typeof CodeMirror == "undefined") {
+        if (typeof CodeMirror === "undefined") {
             textArea.style.opacity = 1
         }
         CodeMirror.fromTextArea(textArea, {
@@ -53,9 +55,46 @@
             document.location = baseUrl+param
         }
 
+        function ajax (method, data) {
+            var request = new XMLHttpRequest()
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    console.log(request.responseText)
+                } else {
+                    console.warn(request.status, request.responseText)
+                }
+                toggleSpinner()
+            }
+            request.onerror = function() {
+                console.warn(request.status, request.responseText)
+                toggleSpinner()
+            }
+            if (method === 'POST') {
+                request.open(method, '', true)
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                request.send(data)
+            } else {
+                request.open(method, data, true);
+                request.send()
+            }
+        }
+
+        function toggleSpinner () {
+            // el = document.getElementById("spinner");
+            // el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
+        }
+
         select = document.getElementsByTagName('select')[0]
         select.addEventListener('change', function(e) {
             setGetParameter(e.target.name, e.target.value)
         }, false);
+
+        updateBlacklist = document.querySelectorAll('.updateBlacklist')[0]
+        updateBlacklist.addEventListener('submit', function(e) {
+            if (e.preventDefault) e.preventDefault();
+            toggleSpinner()
+            ajax('POST', 'generateBlacklist=true')
+        }, false);
+
     </script>
 </html>

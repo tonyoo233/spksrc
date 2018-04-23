@@ -120,10 +120,10 @@
     border: 1px solid #7eadd9;
 }
 
-#dnscrypt-proxy .fileSelector .btn {
+#dnscrypt-proxy .updateBlacklist .btn {
     position: fixed;
-    top: 10px;
-    left: 220px;
+    bottom: 10px;
+    left: 10px;
 }
 
 #dnscrypt-proxy .fileEditor .btn {

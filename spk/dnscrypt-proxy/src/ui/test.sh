@@ -10,13 +10,21 @@ urlencode() {
 # ---------------------------------------------------------------------------
 
 setup() {
-    mkdir -p test/bin test/var
+    mkdir -p test/bin test/var test/utils
     #ln -sf $(pwd)/../../work-*/install/var/packages/dnscrypt-proxy/target/bin/dnscrypt-proxy test/bin/dnscrypt-proxy
     ln -sf $(which dnscrypt-proxy) test/bin/dnscrypt-proxy
     cp ../../work-*/install/var/packages/dnscrypt-proxy/target/example-* test/var/
     for file in test/var/example-*; do
         mv "${file}" "${file//example-/}"
     done
+
+    wget -t 3 -O test/utils/generate-domains-blacklist.py \
+        --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/generate-domains-blacklist.py
+    wget -t 3 -O test/utils/domains-blacklist.conf \
+        --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
+    touch test/utils/domains-whitelist.txt
+    touch test/utils/domains-time-restricted.txt
+    touch test/utils/domains-blacklist-local-additions.txt
 }
 
 fixLinks() {
@@ -58,3 +66,6 @@ export REQUEST_METHOD=GET
 export QUERY_STRING=file=blacklist
 ./index.cgi --dev | tail -n +4 > test/get.html
 fixLinks test/get.html
+
+export REQUEST_METHOD=POST
+echo "generateBlacklist=true" | ./index.cgi --dev > test/generateBlacklist.html

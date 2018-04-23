@@ -4,6 +4,21 @@ PID_FILE="${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.pid"
 CFG_FILE="${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml"
 EXAMPLE_FILES="${SYNOPKG_PKGDEST}/example-*"
 
+blocklist_py () {
+    ## https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists
+    ## https://github.com/jedisct1/dnscrypt-proxy/tree/master/utils/generate-domains-blacklists
+    echo "Install/Upgrade generate-domains-blacklist.py (requires python)" >> "${INST_LOG}"
+    mkdir -p "${SYNOPKG_PKGDEST}/utils"
+    chmod 0777 "${SYNOPKG_PKGDEST}"/utils/ >> "${INST_LOG}" 2>&1
+    wget -t 3 -O "${SYNOPKG_PKGDEST}/utils/generate-domains-blacklist.py" \
+        --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/generate-domains-blacklist.py \
+        >> "${INST_LOG}" 2>&1
+    touch ${SYNOPKG_PKGDEST}/utils/domains-blacklist.conf
+    touch ${SYNOPKG_PKGDEST}/utils/domains-whitelist.txt
+    touch ${SYNOPKG_PKGDEST}/utils/domains-time-restricted.txt
+    touch ${SYNOPKG_PKGDEST}/utils/domains-blacklist-local-additions.txt
+}
+
 service_prestart () {
     echo "Free port 53 from dnsmasq" >> "${LOG_FILE}"
     echo 'enable="yes"' > /etc/dhcpd/dhcpd-custom-custom.info
@@ -29,7 +44,7 @@ service_postinst () {
         done
 
         echo "Applying settings from Wizard..." >> "${INST_LOG}"
-        # if empty comment out server list
+        ## if empty comment out server list
         wizard_servers=${wizard_servers:-''}
         if [ -z "${wizard_servers// }" ]; then
             server_names_enabled='# '
@@ -38,7 +53,7 @@ service_postinst () {
         listen_addresses=\[${wizard_listen_address:-"'0.0.0.0:$SERVICE_PORT'"}\]
         server_names=\[${wizard_servers:-"'scaleway-fr', 'google', 'yandex', 'cloudflare'"}\]
 
-        # change default settings
+        ## change default settings
         sed -i -e "s/listen_addresses = .*/listen_addresses = ${listen_addresses}/" \
             -e "s/require_dnssec = .*/require_dnssec = true/" \
             -e "s/# server_names = .*/${server_names_enabled:-""}server_names = ${server_names}/" \
@@ -51,15 +66,18 @@ service_postinst () {
 
     echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
     ## Allow cgi user to write to this file
-    # chown dosn't work as it's overwritten. see page 104 in https://developer.synology.com/download/developer-guide.pdf
+    ## chown dosn't work as it's overwritten. see page 104 in https://developer.synology.com/download/developer-guide.pdf
     # chown system /var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml
-    # Less than ideal solution, ToDo: find something better
+    ## Less than ideal solution, ToDo: find something better
     chmod 0666 "${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml" >> "${INST_LOG}" 2>&1
     chmod 0666 "${SYNOPKG_PKGDEST}"/var/*.txt >> "${INST_LOG}" 2>&1
     chmod 0777 "${SYNOPKG_PKGDEST}"/var/ >> "${INST_LOG}" 2>&1
 
     echo "Set dnsmasq settings" >> "${INST_LOG}"
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
+
+    blocklist_py
+    wget -t 3 -O "${SYNOPKG_PKGDEST}/utils/domains-blacklist.conf" --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
 }
 
 service_postuninst () {
@@ -81,5 +99,7 @@ service_preupgrade () {
 
     echo "Set dnsmasq settings" >> "${INST_LOG}"
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
+
+    blocklist_py
 }
-# rm -drf work-ipq806x-1.1/scripts && make arch-ipq806x-1.1
+## rm -drf work-ipq806x-1.1/scripts && make arch-ipq806x-1.1

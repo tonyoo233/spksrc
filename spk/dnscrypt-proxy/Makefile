@@ -71,5 +71,5 @@ dnscrypt_extra_install: copy_msg
 	@echo "===> UI - Compiling cgi"
 	# go get github.com/BurntSushi/toml
 	go build -ldflags "-s -w" -o $(STAGING_DIR)/$(DSM_UI_DIR)/index.cgi $(CURDIR)/src/$(DSM_UI_DIR)/cgi.go
-# rm -f work-ipq806x-1.1/.copy_done && rm -f work-ipq806x-1.1/.icon_done && make arch-ipq806x-1.1
-# synopkg uninstall dnscrypt-proxy
+## rm -f work-ipq806x-1.1/.copy_done && rm -f work-ipq806x-1.1/.icon_done && make arch-ipq806x-1.1
+## synopkg uninstall dnscrypt-proxy

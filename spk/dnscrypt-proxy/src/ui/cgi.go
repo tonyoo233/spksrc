@@ -83,7 +83,7 @@ func auth() string {
     }
 
     // check permissions
-    cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi")
+    cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi") // performance hit
     cmdOut, err := cmd.Output()
     if err != nil {
         logUnauthorised(err.Error())
@@ -91,7 +91,7 @@ func auth() string {
     cmdOut = bytes.TrimLeftFunc(cmdOut, findJson)
 
     var jsonData AuthJson
-    if err := json.Unmarshal(cmdOut, &jsonData); err != nil {
+    if err := json.Unmarshal(cmdOut, &jsonData); err != nil {  // performance hit
         logUnauthorised(err.Error())
     }
 
@@ -122,7 +122,26 @@ func notFound() {
     os.Exit(0)
 }
 
+func checkIfFileExists (file string) bool {
+    _, err := os.Stat(file)
+    if err != nil {
+        if os.IsNotExist(err) {
+            return false
+        }
+        logError(err.Error())
+    }
+    return true
+}
+
 func loadFile(file string) string {
+    if !checkIfFileExists(file) {
+        newFile, err := os.Create(file)
+        if err != nil {
+            logError(err.Error())
+        }
+        newFile.Close()
+    }
+
     data, err := ioutil.ReadFile(file)
     if err != nil {
         logError(err.Error())
@@ -140,7 +159,7 @@ func saveFile(fileKey string, data string) {
         checkConfFile(true)
     }
 
-    err = os.Rename(rootDir+files[fileKey]+".tmp", rootDir+files[fileKey])
+    err = os.Rename(rootDir+files[fileKey]+".tmp", rootDir+files[fileKey]) // atomic
     if err != nil {
         logError(err.Error())
     }
@@ -153,20 +172,42 @@ func saveFile(fileKey string, data string) {
 }
 
 func checkConfFile(tmp bool) {
-    var errbuf bytes.Buffer
     var tmpExt string
     if tmp {
         tmpExt = ".tmp"
     }
 
     cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", rootDir+files["config"]+tmpExt)
-    cmd.Stderr = &errbuf
-
-    out, err := cmd.Output()
+    out, err := cmd.CombinedOutput()
     if err != nil {
-        renderHtml("config", "", string(out)+errbuf.String()) // out = stdout,  errbuf = stderr
+        renderHtml("config", "", string(out)+err.Error())
+    }
+}
+
+func checkCmdExists(cmd string) bool {
+    _, err := exec.LookPath(cmd)
+    if err != nil {
+        return false
+    }
+    return true
+}
+
+func generateBlacklist () {
+    if !checkCmdExists("python") {
+        renderHtml("config", "", "Python could not be found or is not installed!")
+    }
+
+    cmd := exec.Command("python", rootDir+"/utils/generate-domains-blacklist.py")
+    cmd.Dir = rootDir+"/utils"
+
+    out, err := cmd.CombinedOutput()
+    if err != nil {
+        fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
+        fmt.Println("<p>"+string(out)+err.Error()+"</p>")
         os.Exit(0)
     }
+
+    saveFile("blacklist", string(out))
 }
 
 func renderHtml(fileKey string, successMessage string, errorMessage string) {
@@ -203,7 +244,7 @@ func readGet() url.Values {
 
 func readPost() url.Values { // todo: stop on a max size (10mb?)
     // fixme: check/generate csrf token
-    bytes, err := ioutil.ReadAll(os.Stdin)
+    bytes, err := ioutil.ReadAll(os.Stdin) // if there is no data the process will block (wait)
     if err != nil {
         logError(err.Error())
     }
@@ -223,7 +264,13 @@ func main() {
     dev = flag.Bool("dev", false, "Turns Authentication checks off")
     flag.Parse()
 
-    rootDir = "test"
+    pwd, err := os.Getwd()
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
+    rootDir = pwd+"/test"
+
     if !*dev {
         auth()
         rootDir = "/var/packages/dnscrypt-proxy/target"
@@ -235,17 +282,27 @@ func main() {
     files["cloaking"] = "/var/cloaking-rules.txt"
     files["forwarding"] = "/var/forwarding-rules.txt"
     files["whitelist"] = "/var/whitelist.txt"
+    files["-domains-blacklist"] = "/utils/domains-blacklist.conf" // - is used for ordering
+    files["-domains-whitelist"] = "/utils/domains-whitelist.txt"
+    files["-domains-time-restricted"] = "/utils/domains-time-restricted.txt"
+    files["-domains-blacklist-local-additions"] = "/utils/domains-blacklist-local-additions.txt"
 
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" || method == "PUT" || method == "PATCH" { // POST
         postData := readPost()
         fileData := postData.Get("fileContent")
         fileKey := postData.Get("file")
+        generateBlacklistStr := postData.Get("generateBlacklist")
         if fileData != "" && fileKey != "" {
             saveFile(fileKey, fileData)
             renderHtml(fileKey, "File saved successfully!", "")
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return
+        } else if generateBlacklistStr != "" {
+            generateBlacklist()
+            fmt.Println("Status: 200 OK\nContent-Type: text/plain; charset=utf-8\n")
+            os.Exit(0)
+
         }
         renderHtml("config", "", "No valid data submitted.")
     }

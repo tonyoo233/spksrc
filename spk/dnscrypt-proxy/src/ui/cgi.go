@@ -194,20 +194,24 @@ func checkCmdExists(cmd string) bool {
 
 func generateBlacklist () {
     if !checkCmdExists("python") {
-        renderHtml("config", "", "Python could not be found or is not installed!")
-    }
-
-    cmd := exec.Command("python", rootDir+"/utils/generate-domains-blacklist.py")
-    cmd.Dir = rootDir+"/utils"
-
-    out, err := cmd.CombinedOutput()
-    if err != nil {
         fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
-        fmt.Println("<p>"+string(out)+err.Error()+"</p>")
+        fmt.Println("<p>Python could not be found or is not installed!</p>")
         os.Exit(0)
     }
 
-    saveFile("blacklist", string(out))
+    var stdout, stderr bytes.Buffer
+    cmd := exec.Command("python", rootDir+"/utils/generate-domains-blacklist.py")
+    cmd.Dir = rootDir+"/utils"
+    cmd.Stdout = &stdout
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+    if err != nil {
+        fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
+        fmt.Println("<p>"+string(stderr.Bytes())+err.Error()+"</p>")
+        os.Exit(0)
+    }
+    // cmd.Wait()
+    saveFile("blacklist", string(stdout.Bytes()))
 }
 
 func renderHtml(fileKey string, successMessage string, errorMessage string) {

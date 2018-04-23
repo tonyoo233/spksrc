@@ -11,6 +11,27 @@
             <p class="error">{{.ErrorMessage}}</p>
             <p class="success">{{.SuccessMessage}}</p>
         </div>
+        <div class="spinner">
+            <div class="centerBox">
+                <span class="animation">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                        <rect x="0" y="0" width="40" height="40" fill="#C8D2DD" shape-rendering="crispEdges">
+                            <animate attributeName="fill" values="#2A5790;#C8D2DD;#C8D2DD" keyTimes="0;0.25;1" dur="0.8s" repeatCount="indefinite" begin="0s" calcMode="discrete"></animate>
+                        </rect>
+                        <rect x="50" y="0" width="40" height="40" fill="#C8D2DD" shape-rendering="crispEdges">
+                            <animate attributeName="fill" values="#2A5790;#C8D2DD;#C8D2DD" keyTimes="0;0.25;1" dur="0.8s" repeatCount="indefinite" begin="0.2s" calcMode="discrete"></animate>
+                        </rect>
+                        <rect x="0" y="50" width="40" height="40" fill="#C8D2DD" shape-rendering="crispEdges">
+                            <animate attributeName="fill" values="#2A5790;#C8D2DD;#C8D2DD" keyTimes="0;0.25;1" dur="0.8s" repeatCount="indefinite" begin="0.6s" calcMode="discrete"></animate>
+                        </rect>
+                        <rect x="50" y="50" width="40" height="40" fill="#C8D2DD" shape-rendering="crispEdges">
+                            <animate attributeName="fill" values="#2A5790;#C8D2DD;#C8D2DD" keyTimes="0;0.25;1" dur="0.8s" repeatCount="indefinite" begin="0.4s" calcMode="discrete"></animate>
+                        </rect>
+                    </svg>
+                </span>
+                <p>Loading...</p>
+                </div>
+        </div>
         <form method="get" class="fileSelector">
             <span id="fileSelect">
                 <select name="file">
@@ -59,19 +80,28 @@
             var request = new XMLHttpRequest()
             request.onload = function() {
                 if (request.status >= 200 && request.status < 400) {
-                    console.log(request.responseText)
+                    successMessage = document.querySelectorAll('#dnscrypt-proxy .success')[0]
+                    // restart fade animation
+                    successMessage.style.animation = 'none';
+                    successMessage.offsetHeight //  trigger reflow
+                    successMessage.innerText = "Saved changes!"
+                    successMessage.style.animation = null;
                 } else {
-                    console.warn(request.status, request.responseText)
+                    console.error(request.status, request.responseText)
+                    errorMessage = document.querySelectorAll('#dnscrypt-proxy .error')[0]
+                    errorMessage.innerText = request.responseText
                 }
                 toggleSpinner()
             }
             request.onerror = function() {
-                console.warn(request.status, request.responseText)
+                console.error(request.status, request.responseText)
+                errorMessage = document.querySelectorAll('#dnscrypt-proxy .error')[0]
+                errorMessage.innerText = "Something went wrong :'("
                 toggleSpinner()
             }
             if (method === 'POST') {
                 request.open(method, '', true)
-                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
                 request.send(data)
             } else {
                 request.open(method, data, true);
@@ -80,8 +110,8 @@
         }
 
         function toggleSpinner () {
-            // el = document.getElementById("spinner");
-            // el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
+            spinner = document.querySelectorAll('#dnscrypt-proxy .spinner')[0]
+            spinner.style.visibility = (spinner.style.visibility === 'visible') ? 'hidden' : 'visible'
         }
 
         select = document.getElementsByTagName('select')[0]
@@ -89,7 +119,7 @@
             setGetParameter(e.target.name, e.target.value)
         }, false);
 
-        updateBlacklist = document.querySelectorAll('.updateBlacklist')[0]
+        updateBlacklist = document.querySelectorAll('#dnscrypt-proxy .updateBlacklist')[0]
         updateBlacklist.addEventListener('submit', function(e) {
             if (e.preventDefault) e.preventDefault();
             toggleSpinner()

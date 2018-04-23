@@ -8,15 +8,19 @@ blocklist_py () {
     ## https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists
     ## https://github.com/jedisct1/dnscrypt-proxy/tree/master/utils/generate-domains-blacklists
     echo "Install/Upgrade generate-domains-blacklist.py (requires python)" >> "${INST_LOG}"
-    mkdir -p "${SYNOPKG_PKGDEST}/utils"
-    chmod 0777 "${SYNOPKG_PKGDEST}"/utils/ >> "${INST_LOG}" 2>&1
-    wget -t 3 -O "${SYNOPKG_PKGDEST}/utils/generate-domains-blacklist.py" \
+    mkdir -p "${SYNOPKG_PKGDEST}/var"
+    chmod 0777 "${SYNOPKG_PKGDEST}"/var/ >> "${INST_LOG}" 2>&1
+    wget -t 3 -O "${SYNOPKG_PKGDEST}/var/generate-domains-blacklist.py" \
         --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/generate-domains-blacklist.py \
         >> "${INST_LOG}" 2>&1
-    touch ${SYNOPKG_PKGDEST}/utils/domains-blacklist.conf
-    touch ${SYNOPKG_PKGDEST}/utils/domains-whitelist.txt
-    touch ${SYNOPKG_PKGDEST}/utils/domains-time-restricted.txt
-    touch ${SYNOPKG_PKGDEST}/utils/domains-blacklist-local-additions.txt
+    touch ${SYNOPKG_PKGDEST}/var/domains-blacklist.conf
+    touch ${SYNOPKG_PKGDEST}/var/domains-whitelist.txt
+    touch ${SYNOPKG_PKGDEST}/var/domains-time-restricted.txt
+    touch ${SYNOPKG_PKGDEST}/var/domains-blacklist-local-additions.txt
+    if [ ! -e "${SYNOPKG_PKGDEST}/var/domains-blacklist.conf" ]; then
+        wget -t 3 -O "${SYNOPKG_PKGDEST}/var/domains-blacklist.conf" \
+            --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
+    fi
 }
 
 service_prestart () {
@@ -77,7 +81,6 @@ service_postinst () {
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
 
     blocklist_py
-    wget -t 3 -O "${SYNOPKG_PKGDEST}/utils/domains-blacklist.conf" --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
 }
 
 service_postuninst () {
@@ -86,20 +89,5 @@ service_postuninst () {
     rm -f /etc/dhcpd/dhcpd-custom-custom.conf
     rm -f /etc/dhcpd/dhcpd-custom-custom.info
     /etc/rc.network nat-restart-dhcp
-}
-
-service_preupgrade () {
-    echo "Setting up the Web GUI..." >> "${INST_LOG}"
-    ln -s "${SYNOPKG_PKGDEST}/ui/" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
-
-    echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
-    chmod 0666 "${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml" >> "${INST_LOG}" 2>&1
-    chmod 0666 "${SYNOPKG_PKGDEST}"/var/*.txt >> "${INST_LOG}" 2>&1
-    chmod 0777 "${SYNOPKG_PKGDEST}"/var/ >> "${INST_LOG}" 2>&1
-
-    echo "Set dnsmasq settings" >> "${INST_LOG}"
-    echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
-
-    blocklist_py
 }
 ## rm -drf work-ipq806x-1.1/scripts && make arch-ipq806x-1.1

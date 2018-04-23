@@ -10,7 +10,7 @@ urlencode() {
 # ---------------------------------------------------------------------------
 
 setup() {
-    mkdir -p test/bin test/var test/utils
+    mkdir -p test/bin test/var
     #ln -sf $(pwd)/../../work-*/install/var/packages/dnscrypt-proxy/target/bin/dnscrypt-proxy test/bin/dnscrypt-proxy
     ln -sf $(which dnscrypt-proxy) test/bin/dnscrypt-proxy
     cp ../../work-*/install/var/packages/dnscrypt-proxy/target/example-* test/var/
@@ -18,13 +18,13 @@ setup() {
         mv "${file}" "${file//example-/}"
     done
 
-    wget -t 3 -O test/utils/generate-domains-blacklist.py \
+    wget -t 3 -O test/var/generate-domains-blacklist.py \
         --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/generate-domains-blacklist.py
-    wget -t 3 -O test/utils/domains-blacklist.conf \
+    wget -t 3 -O test/var/domains-blacklist.conf \
         --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
-    touch test/utils/domains-whitelist.txt
-    touch test/utils/domains-time-restricted.txt
-    touch test/utils/domains-blacklist-local-additions.txt
+    touch test/var/domains-whitelist.txt
+    touch test/var/domains-time-restricted.txt
+    touch test/var/domains-blacklist-local-additions.txt
 }
 
 fixLinks() {

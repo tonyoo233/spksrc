@@ -4,6 +4,43 @@
     font-size: 14px;
 }
 
+#dnscrypt-proxy .spinner {
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255,255,255,0.5);
+    visibility: hidden;
+}
+
+#dnscrypt-proxy .spinner .centerBox {
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    margin: -32px 0 0 -100px;
+    background: #fff;
+    box-shadow: 0 0 4px #888;
+    border-radius: 2px;
+}
+#dnscrypt-proxy .animation {
+    position: absolute;
+    top: 50%;
+    left: 35px;
+    margin-top: -14px;
+    height: 30px;
+}
+#dnscrypt-proxy .spinner p {
+    text-align: right;
+    margin: 14px 45px;
+    font-size: 18px;
+    color: #444;
+}
+
+
 #dnscrypt-proxy .message {
     position: fixed;
     top: 3px;

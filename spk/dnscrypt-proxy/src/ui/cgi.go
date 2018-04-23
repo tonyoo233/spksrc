@@ -195,22 +195,21 @@ func checkCmdExists(cmd string) bool {
 func generateBlacklist () {
     if !checkCmdExists("python") {
         fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
-        fmt.Println("<p>Python could not be found or is not installed!</p>")
+        fmt.Println("Python could not be found or is not installed!")
         os.Exit(0)
     }
 
     var stdout, stderr bytes.Buffer
-    cmd := exec.Command("python", rootDir+"/utils/generate-domains-blacklist.py")
-    cmd.Dir = rootDir+"/utils"
+    cmd := exec.Command("python", rootDir+"/var/generate-domains-blacklist.py")
+    cmd.Dir = rootDir+"/var"
     cmd.Stdout = &stdout
     cmd.Stderr = &stderr
     err := cmd.Run()
     if err != nil {
         fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
-        fmt.Println("<p>"+string(stderr.Bytes())+err.Error()+"</p>")
+        fmt.Println(string(stderr.Bytes())+err.Error())
         os.Exit(0)
     }
-    // cmd.Wait()
     saveFile("blacklist", string(stdout.Bytes()))
 }
 
@@ -286,10 +285,10 @@ func main() {
     files["cloaking"] = "/var/cloaking-rules.txt"
     files["forwarding"] = "/var/forwarding-rules.txt"
     files["whitelist"] = "/var/whitelist.txt"
-    files["-domains-blacklist"] = "/utils/domains-blacklist.conf" // - is used for ordering
-    files["-domains-whitelist"] = "/utils/domains-whitelist.txt"
-    files["-domains-time-restricted"] = "/utils/domains-time-restricted.txt"
-    files["-domains-blacklist-local-additions"] = "/utils/domains-blacklist-local-additions.txt"
+    files["-domains-blacklist"] = "/var/domains-blacklist.conf" // - is used for ordering
+    files["-domains-whitelist"] = "/var/domains-whitelist.txt"
+    files["-domains-time-restricted"] = "/var/domains-time-restricted.txt"
+    files["-domains-blacklist-local-additions"] = "/var/domains-blacklist-local-additions.txt"
 
     method := os.Getenv("REQUEST_METHOD")
     if method == "POST" || method == "PUT" || method == "PATCH" { // POST

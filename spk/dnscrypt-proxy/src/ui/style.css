@@ -11,33 +11,34 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.6);
     visibility: hidden;
 }
 
 #dnscrypt-proxy .spinner .centerBox {
     position: absolute;
-    width: 200px;
+    width: 300px;
     height: 50px;
     top: 50%;
     left: 50%;
-    margin: -32px 0 0 -100px;
+    margin: -32px 0 0 -150px;
     background: #fff;
-    box-shadow: 0 0 4px #888;
+    box-shadow: 0 1px 4px #bbb;
     border-radius: 2px;
+    border:1px solid #c8d2dc;
 }
 #dnscrypt-proxy .animation {
     position: absolute;
     top: 50%;
-    left: 35px;
+    left: 30px;
     margin-top: -14px;
     height: 30px;
 }
 #dnscrypt-proxy .spinner p {
     text-align: right;
-    margin: 14px 45px;
+    margin: 14px 25px;
     font-size: 18px;
-    color: #444;
+    color: #666;
 }
 
 
@@ -48,7 +49,7 @@
 }
 
 #dnscrypt-proxy .success {
-    color: #29D219;
+    color: #29d219;
     animation: 1s 4s forwards fade-out;
     -webkit-animation: 1s 4s forwards fade-out;
 }
@@ -84,7 +85,7 @@
     -moz-appearance: none;
     appearance: none;
     width: 162px;
-    border:1px solid #C8D2DC;
+    border:1px solid #c8d2dc;
     height: 24px;
     line-height: 24px;
     padding: 1px 3px 1px 8px;

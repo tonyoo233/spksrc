@@ -67,5 +67,5 @@ export QUERY_STRING=file=blacklist
 ./index.cgi --dev | tail -n +4 > test/get.html
 fixLinks test/get.html
 
-export REQUEST_METHOD=POST
-echo "generateBlacklist=true" | ./index.cgi --dev > test/generateBlacklist.html
+# export REQUEST_METHOD=POST
+# echo "generateBlacklist=true" | ./index.cgi --dev > test/generateBlacklist.html

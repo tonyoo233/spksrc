@@ -1,5 +1,5 @@
 "indexdb": {
-    "index-index": {
+    "app-index": {
         "config-realpath": "ui/index.conf",
         "db-realpath": "indexdb/appindexdb"
     },

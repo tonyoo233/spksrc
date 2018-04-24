@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" id="dnscrypt-proxy">
+<html lang="en" class="dnscrypt-proxy">
     <head>
         <title>
             {{.Title}}
         </title>
         <link rel="stylesheet" type="text/css" href="/webman/3rdparty/dnscrypt-proxy/style.css">
+        <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     </head>
     <body>
         <div class="message">
@@ -30,10 +31,10 @@
                     </svg>
                 </span>
                 <p>Processing. Please wait...</p>
-                </div>
+            </div>
         </div>
         <form method="get" class="fileSelector">
-            <span id="fileSelect">
+            <span class="fileSelect">
                 <select name="file">
                     {{- $File := .File -}}
                     {{- range $key, $value := .Files -}}
@@ -51,80 +52,86 @@
         </form>
         <form method="post" class="fileEditor">
             <input type="hidden" name="file" value="{{.File}}">
-            <div id="fileContent">
-                <textarea name="fileContent" autocomplete="off">{{.FileData}}</textarea>
+            <div class="fileContent">
+                <textarea name="fileContent" autocomplete="off" autofocus>{{.FileData}}</textarea>
             </div>
             <input class="btn primary" type="submit" value="Save">
         </form>
-    </body>
-    <script src="codemirror/lib/codemirror.js"></script>
-    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
-    <script src="codemirror/mode/toml/toml.js"></script>
-    <script type="text/javascript">
-        textArea = document.getElementsByTagName('textarea')[0]
-        if (typeof CodeMirror === "undefined") {
-            textArea.style.opacity = 1
-        }
-        CodeMirror.fromTextArea(textArea, {
-            lineNumbers: true
-        });
-    </script>
-    <script type="text/javascript">
-        function setGetParameter (key, value) {
-            var baseUrl = [location.protocol, '//', location.host, location.pathname].join('')
-            var param = '?' + key + '=' + value
-            document.location = baseUrl+param
-        }
 
-        function ajax (method, data) {
-            var request = new XMLHttpRequest()
-            request.onload = function() {
-                if (request.status >= 200 && request.status < 400) {
-                    successMessage = document.querySelectorAll('#dnscrypt-proxy .success')[0]
-                    // restart fade animation
-                    successMessage.style.animation = 'none';
-                    successMessage.offsetHeight //  trigger reflow
-                    successMessage.innerText = "Saved changes!"
-                    successMessage.style.animation = null;
-                } else {
-                    console.error(request.status, request.responseText)
-                    errorMessage = document.querySelectorAll('#dnscrypt-proxy .error')[0]
-                    errorMessage.innerText = request.responseText
-                }
-                toggleSpinner()
-            }
-            request.onerror = function() {
-                console.error(request.status, request.responseText)
-                errorMessage = document.querySelectorAll('#dnscrypt-proxy .error')[0]
-                errorMessage.innerText = "Something went wrong :'("
-                toggleSpinner()
-            }
-            if (method === 'POST') {
-                request.open(method, '', true)
-                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-                request.send(data)
+        <script src="codemirror/lib/codemirror.js"></script>
+        <script src="codemirror/mode/toml/toml.js"></script>
+        <!-- Search -->
+        <link rel="stylesheet" href="codemirror/addon/dialog/dialog.css">
+        <script src="codemirror/addon/dialog/dialog.js"></script>
+        <script src="codemirror/addon/display/panel.js"></script>
+        <script src="codemirror/addon/search/searchcursor.js"></script>
+        <script src="codemirror/addon/search/search.js"></script>
+        <script>
+            textArea = document.querySelectorAll('.dnscrypt-proxy textarea')[0]
+            if (typeof CodeMirror === "undefined") {
+                textArea.style.opacity = 1
             } else {
-                request.open(method, data, true);
-                request.send()
+                CodeMirror.fromTextArea(textArea, {
+                    lineNumbers: true
+                });
             }
-        }
 
-        function toggleSpinner () {
-            spinner = document.querySelectorAll('#dnscrypt-proxy .spinner')[0]
-            spinner.style.visibility = (spinner.style.visibility === 'visible') ? 'hidden' : 'visible'
-        }
+            function setGetParameter (key, value) {
+                var baseUrl = [location.protocol, '//', location.host, location.pathname].join('')
+                var param = '?' + key + '=' + value
+                document.location = baseUrl+param
+            }
 
-        select = document.getElementsByTagName('select')[0]
-        select.addEventListener('change', function(e) {
-            setGetParameter(e.target.name, e.target.value)
-        }, false);
+            function ajax (method, data) {
+                var request = new XMLHttpRequest()
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        successMessage = document.querySelectorAll('.dnscrypt-proxy .success')[0]
+                        // restart fade animation
+                        successMessage.style.animation = 'none';
+                        successMessage.offsetHeight //  trigger reflow
+                        successMessage.innerText = "Saved changes!"
+                        successMessage.style.animation = null;
+                    } else {
+                        console.error(request.status, request.responseText)
+                        errorMessage = document.querySelectorAll('.dnscrypt-proxy .error')[0]
+                        errorMessage.innerText = request.responseText
+                    }
+                    toggleSpinner()
+                }
+                request.onerror = function() {
+                    console.error(request.status, request.responseText)
+                    errorMessage = document.querySelectorAll('.dnscrypt-proxy .error')[0]
+                    errorMessage.innerText = "Something went wrong :'("
+                    toggleSpinner()
+                }
+                if (method === 'POST') {
+                    request.open(method, '', true)
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+                    request.send(data)
+                } else {
+                    request.open(method, data, true);
+                    request.send()
+                }
+            }
 
-        updateBlacklist = document.querySelectorAll('#dnscrypt-proxy .updateBlacklist')[0]
-        updateBlacklist.addEventListener('submit', function(e) {
-            if (e.preventDefault) e.preventDefault();
-            toggleSpinner()
-            ajax('POST', 'generateBlacklist=true')
-        }, false);
+            function toggleSpinner () {
+                spinner = document.querySelectorAll('.dnscrypt-proxy .spinner')[0]
+                spinner.style.visibility = (spinner.style.visibility === 'visible') ? 'hidden' : 'visible'
+            }
 
-    </script>
+            select = document.querySelectorAll('.dnscrypt-proxy select')[0]
+            select.addEventListener('change', function(e) {
+                setGetParameter(e.target.name, e.target.value)
+            }, false)
+
+            updateBlacklist = document.querySelectorAll('.dnscrypt-proxy .updateBlacklist')[0]
+            updateBlacklist.addEventListener('submit', function(e) {
+                if (e.preventDefault) e.preventDefault();
+                toggleSpinner()
+                ajax('POST', 'generateBlacklist=true')
+            }, false)
+
+        </script>
+    </body>
 </html>

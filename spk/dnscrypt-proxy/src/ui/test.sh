@@ -29,8 +29,7 @@ setup() {
 
 fixLinks() {
     sed -i '' -e "s@/webman/3rdparty/dnscrypt-proxy/style\\.css@../style\\.css@" $1
-    sed -i '' -e "s@codemirror/lib/@../codemirror/lib/@" $1
-    sed -i '' -e "s@codemirror/mode/toml@../codemirror/mode/toml@" $1
+    sed -i '' -e "s@codemirror/@../codemirror/@" $1
 }
 
 if [ ! -d test ]; then

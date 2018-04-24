@@ -1,21 +1,21 @@
-#dnscrypt-proxy html, #dnscrypt-proxy body {
+.dnscrypt-proxy html, .dnscrypt-proxy body {
     margin: 0;
     font-family: verdana, tahoma, arial, helvetica, sans-serif;
     font-size: 14px;
 }
 
-#dnscrypt-proxy .spinner {
+.dnscrypt-proxy .spinner {
     z-index: 100;
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.7s);
     visibility: hidden;
 }
 
-#dnscrypt-proxy .spinner .centerBox {
+.dnscrypt-proxy .spinner .centerBox {
     position: absolute;
     width: 300px;
     height: 50px;
@@ -27,14 +27,14 @@
     border-radius: 2px;
     border:1px solid #c8d2dc;
 }
-#dnscrypt-proxy .animation {
+.dnscrypt-proxy .animation {
     position: absolute;
     top: 50%;
     left: 30px;
     margin-top: -14px;
     height: 30px;
 }
-#dnscrypt-proxy .spinner p {
+.dnscrypt-proxy .spinner p {
     text-align: right;
     margin: 14px 25px;
     font-size: 18px;
@@ -42,19 +42,19 @@
 }
 
 
-#dnscrypt-proxy .message {
+.dnscrypt-proxy .message {
     position: fixed;
     top: 3px;
     right: 10px;
 }
 
-#dnscrypt-proxy .success {
+.dnscrypt-proxy .success {
     color: #29d219;
     animation: 1s 4s forwards fade-out;
     -webkit-animation: 1s 4s forwards fade-out;
 }
 
-#dnscrypt-proxy .error {
+.dnscrypt-proxy .error {
     color: #f00;
 }
 
@@ -67,51 +67,50 @@
     }
 }
 
-#dnscrypt-proxy #fileSelect {
+.dnscrypt-proxy .fileSelect {
     position: fixed;
     top: 10px;
     left: 10px;
 }
 
-#dnscrypt-proxy select::-ms-expand {
+.dnscrypt-proxy select::-ms-expand {
     display: none; /* hide the default arrow in ie10 and ie11 */
 }
-#dnscrypt-proxy select:-moz-focusring { /* hide the dotted outline on selection in firefox */
+.dnscrypt-proxy select:-moz-focusring { /* hide the dotted outline on selection in firefox */
     color: transparent;
     text-shadow: 0 0 0 #000;
 }
-#dnscrypt-proxy select {
+.dnscrypt-proxy select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: 162px;
+    width: 240px;
     border:1px solid #c8d2dc;
     height: 24px;
     line-height: 24px;
-    padding: 1px 3px 1px 8px;
+    padding: 1px 23px 1px 5px;
     box-sizing: initial;
     cursor: pointer;
     outline: none;
     border-radius: 0;
     box-shadow: inset 0px 1px 0px rgba(80,90,100,0.08);
-    background: url(/webman/3rdparty/dnscrypt-proxy/trigger.png) no-repeat #fff;
-    background-position: 148px -1px;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFAQMAAABGqu8rAAAABlBMVEVHcExQWmT5Hbp+AAAAAXRSTlMAQObYZgAAABdJREFUCFtj+H+Aob6BwZ6BQY6BgYcBACTcAyiS7fZkAAAAAElFTkSuQmCC) no-repeat #fff;
+    background-position: 253px 11px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
-
-#dnscrypt-proxy select:hover{
+.dnscrypt-proxy select:hover{
     border-color: #b4bec8;
-    /*background-position: 122px -1px;*/
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFAQMAAABGqu8rAAAABlBMVEVHcEwVY8fOF4q9AAAAAXRSTlMAQObYZgAAABdJREFUCFtj+H+Aob6BwZ6BQY6BgYcBACTcAyiS7fZkAAAAAElFTkSuQmCC) no-repeat #fff;
+    background-position: 253px 11px;
 
 }
-#dnscrypt-proxy select:focus{
+.dnscrypt-proxy select:focus{
     border-color: #2E6C99;
-    /*background-position: 122px -1px;*/
 }
 
-#dnscrypt-proxy #fileContent {
+.dnscrypt-proxy .fileContent {
     position: fixed;
     top: 50px;
     left: 0;
@@ -124,7 +123,7 @@
     box-sizing: border-box;
 }
 /* Shadow */
-#dnscrypt-proxy #fileContent:before {
+.dnscrypt-proxy .fileContent:before {
     box-shadow: 0 1px 10px rgba(0,0,0,.5);
     content: "";
     width: 100%;
@@ -135,7 +134,7 @@
     z-index: 1;
 }
 
-#dnscrypt-proxy textarea, #dnscrypt-proxy .CodeMirror {
+.dnscrypt-proxy textarea, .dnscrypt-proxy .CodeMirror {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -148,29 +147,29 @@
     font-family: monospace;
 }
 
-#dnscrypt-proxy textarea {
+.dnscrypt-proxy textarea {
     overflow: auto;
     opacity: 0;
     padding: 2px 3px;
 }
 
-#dnscrypt-proxy textarea:active, #dnscrypt-proxy .CodeMirror-focused, #dnscrypt-proxy textarea:focus {
+.dnscrypt-proxy textarea:active, .dnscrypt-proxy .CodeMirror-focused, .dnscrypt-proxy textarea:focus {
     border: 1px solid #7eadd9;
 }
 
-#dnscrypt-proxy .updateBlacklist .btn {
+.dnscrypt-proxy .updateBlacklist .btn {
     position: fixed;
     bottom: 10px;
     left: 10px;
 }
 
-#dnscrypt-proxy .fileEditor .btn {
+.dnscrypt-proxy .fileEditor .btn {
     position: fixed;
     bottom: 10px;
     right: 10px;
 }
 
-#dnscrypt-proxy .btn {
+.dnscrypt-proxy .btn {
     width: auto;
     white-space: nowrap;
     border: solid 1px #c8d2dc;
@@ -189,31 +188,31 @@
     outline: none;
 }
 
-#dnscrypt-proxy .btn:hover {
+.dnscrypt-proxy .btn:hover {
     border-color: #b4bec8;
     background-color: #e7ecf1;
 }
 
-#dnscrypt-proxy .btn:active {
+.dnscrypt-proxy .btn:active {
     border-color: #b4bec8;
     background-image: linear-gradient(#ebf0f5, #e1e6eb);
     background-color: #e1e6eb;
 }
 
-#dnscrypt-proxy .primary {
+.dnscrypt-proxy .primary {
     border-color: #215fa6;
     background-image: linear-gradient(#3d80cc, #2466b2);
     background-color: #2466b2;
     color: #fff;
 }
 
-#dnscrypt-proxy .primary:hover {
+.dnscrypt-proxy .primary:hover {
     border-color: #0e498c;
     background-image: linear-gradient(#337acc, #125db2);
     background-color: #125db2;
 }
 
-#dnscrypt-proxy .primary:active {
+.dnscrypt-proxy .primary:active {
     border-color: #0e498c;
     background-image: linear-gradient(#266ebf, #1156a6);
     background-color: #1156a6;

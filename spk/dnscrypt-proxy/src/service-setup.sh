@@ -81,9 +81,12 @@ service_postinst () {
     echo 'port=0' > /etc/dhcpd/dhcpd-custom-custom.conf
 
     blocklist_py
+
+    # /usr/syno/bin/pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1
 }
 
 service_postuninst () {
+    # /usr/syno/bin/pkgindexer_del ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1
     rm -f /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
     echo "Enable port 53 on dnsmasq" >> "${INST_LOG}"
     rm -f /etc/dhcpd/dhcpd-custom-custom.conf

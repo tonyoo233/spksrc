@@ -13,7 +13,6 @@ blocklist_py () {
     wget -t 3 -O "${SYNOPKG_PKGDEST}/var/generate-domains-blacklist.py" \
         --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/generate-domains-blacklist.py \
         >> "${INST_LOG}" 2>&1
-    touch ${SYNOPKG_PKGDEST}/var/domains-blacklist.conf
     touch ${SYNOPKG_PKGDEST}/var/domains-whitelist.txt
     touch ${SYNOPKG_PKGDEST}/var/domains-time-restricted.txt
     touch ${SYNOPKG_PKGDEST}/var/domains-blacklist-local-additions.txt
@@ -82,11 +81,16 @@ service_postinst () {
 
     blocklist_py
 
-    # /usr/syno/bin/pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1
+    echo "Install Help files" >> "${INST_LOG}"
+    pkgindexer_add ${SYNOPKG_PKGDEST}/ui/index.conf >> "${INST_LOG}" 2>&1
+    pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf >> "${INST_LOG}" 2>&1
+    # pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1 # DMS 6.0 ?
 }
 
 service_postuninst () {
-    # /usr/syno/bin/pkgindexer_del ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1
+    echo "Uninstall Help files" >> "${INST_LOG}"
+    pkgindexer_del ${SYNOPKG_PKGDEST}/ui/helptoc.conf >> "${INST_LOG}" 2>&1
+    pkgindexer_del ${SYNOPKG_PKGDEST}/ui/index.conf >> "${INST_LOG}" 2>&1
     rm -f /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
     echo "Enable port 53 on dnsmasq" >> "${INST_LOG}"
     rm -f /etc/dhcpd/dhcpd-custom-custom.conf

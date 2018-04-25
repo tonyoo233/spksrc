@@ -10,24 +10,29 @@
         <script type="text/javascript" src="../../../../help/scrollbar/initFlexcroll.js"></script>
     </head>
     <body>
-        <h1>DNSCrypt-proxy</h1>
-        <p><a href="https://github.com/jedisct1/dnscrypt-proxy">DNSCrypt-proxy</a> is a DNS proxy that implements the <a href="https://dnscrypt.info/protocol">dnscrypt</a> and <a href="https://tools.ietf.org/html/draft-ietf-doh-dns-over-https">DNS-over-HTTPS (doh)</a>protocols.</p>
-        <h3>Installation</h3>
-        <p><b>**NOTE: This package is incompatible with the DNS Server package from Synology!**</b></p>
+        <h1>DNSCrypt-Proxy</h1>
+        <p><a href="https://github.com/jedisct1/dnscrypt-proxy" target="_blank">DNSCrypt-Proxy</a> is a DNS proxy that implements the <a href="https://dnscrypt.info/protocol" target="_blank">dnscrypt</a> and <a href="https://tools.ietf.org/html/draft-ietf-doh-dns-over-https" target="_blank">DNS-over-HTTPS (doh)</a> protocols.</p>
+        <h2>Installation</h2>
+        <div class="section">
+            <h4>Note:</h4>
+            <ol>
+                <li>This package is incompatible with the DNS Server package from Synology!</li>
+            </ol>
+        </div>
         <img src="/webman/3rdparty/dnscrypt-proxy/help/images/install-wizard.png" alt="Installer interface of DNSCrypt-proxy">
         <ul>
-            <li>Listen Addresses: List of local addresses and ports to listen to. Can be IPv4 and/or IPv6</li>
-            <li>IPv6 Servers: Use servers reachable over IPv6 -- Do not enable if you don't have IPv6 connectivity</li>
-            <li>Server Names: List of <a href="https://dnscrypt.info/public-servers">Servers</a> to use. If empty, all registered servers matching the <code>require_*</code> filters will be used, The proxy will automatically pick the fastest, working servers from the list.</li>
+            <li><b>Listen Addresses:</b> List of local addresses and ports to listen to. Can be IPv4 and/or IPv6</li>
+            <li><b>IPv6 Servers:</b> Use servers reachable over IPv6 -- Do not enable if you don't have IPv6 connectivity</li>
+            <li><b>Server Names:</b> List of <a href="https://dnscrypt.info/public-servers" target="_blank">Servers</a> to use. If empty, all registered servers matching the <code>require_*</code> filters will be used, The proxy will automatically pick the fastest, working servers from the list.</li>
         </ul>
-        <h3>Configuration</h3>
+        <h2>Configuration</h2>
         <img src="/webman/3rdparty/dnscrypt-proxy/help/images/ui.png" alt="User interface of DNSCrypt-proxy">
         <ol>
-            <li>Generate Blacklist: will fetch provided lists and update the var/blacklist.txt file using the <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists">generate-domains-blacklist.py</a> script</li>
-            <li>Save: Saves the file to disk. You need to manually restart DNSCrypt-proxy to apply changes.</li>
+            <li><b>Generate Blacklist:</b> will fetch provided lists and update the var/blacklist.txt file using the <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists" target="_blank">generate-domains-blacklist.py</a> script</li>
+            <li><b>Save:</b> Saves the file to disk. You need to manually restart DNSCrypt-proxy to apply changes.</li>
         </ol>
-        <p>For more detailed information I suggest you visit the dnscrypt-proxy wiki: <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki">https://github.com/jedisct1/dnscrypt-proxy/wiki</a>.</p>
-        <h4>Optional: Network devices configuration</h4>
-        <p><a href="https://1.1.1.1/#setup-instructions">Cloudflare</a> has some good instructions on how to change your DNS settings to point to a custom DNS server. Instead of <code>1.1.1.1</code> you need to use your Synology's IP address. e.g. <code>192.168.1.1<code></p>
+        <p>For more detailed information I suggest you visit the <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki" target="_blank">dnscrypt-proxy wiki</a>.</p>
+        <h3>Optional: Network devices configuration</h3>
+        <p><a href="https://1.1.1.1/#setup-instructions" target="_blank">Cloudflare</a> has some good instructions on how to change your DNS settings to point to a custom DNS server. Instead of <code>1.1.1.1</code> you need to use your Synology's IP address. e.g. <code>192.168.1.1<code></p>
     </body>
 </html>

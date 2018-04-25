@@ -84,7 +84,7 @@ service_postinst () {
     echo "Install Help files" >> "${INST_LOG}"
     pkgindexer_add ${SYNOPKG_PKGDEST}/ui/index.conf >> "${INST_LOG}" 2>&1
     pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf >> "${INST_LOG}" 2>&1
-    # pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1 # DMS 6.0 ?
+    # pkgindexer_add ${SYNOPKG_PKGDEST}/ui/helptoc.conf ${SYNOPKG_PKGDEST}/indexdb/helpindexdb >> "${INST_LOG}" 2>&1 # DSM 6.0 ?
 }
 
 service_postuninst () {

@@ -21,6 +21,7 @@ BETA = 1
 WIZARDS_DIR = src/wizard/
 DSM_UI_DIR = ui
 CONF_DIR = src/conf
+# FWPORTS_FILE = src/conf/dnscrypt-proxy.sc # doesn't work -> https://github.com/SynoCommunity/spksrc/wiki/Service-Support#worker-service-configuration-for-port
 
 SERVICE_USER = auto
 SERVICE_SETUP = src/service-setup.sh

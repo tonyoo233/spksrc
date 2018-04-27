@@ -24,26 +24,27 @@ blocklist_setup () {
 }
 
 pgrep () {
-    # shellcheck disable=SC2009
-    ps | grep "[^]]$1"
+    # shellcheck disable=SC2009,SC2153
+    ps -w | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
 }
 
 disable_dhcpd_dns_port () {
     if [ "$1" == "no" ] && [ -f /etc/dhcpd/dhcpd-custom-custom.conf ]; then
-        # shellcheck disable=SC2153
         echo "Port 0 - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
         echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-custom-custom.info
         /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
     elif [ "$1" == "yes" ] && netstat -na | grep ":53 " >> "${LOG_FILE}" 2>&1; then
-        echo "Port 53 is in use" >> "${LOG_FILE}" 2>&1
-        if pgrep 'dhcpd.conf'; then  # only do this dhcp (dnsmasq) is enabled and running
+        echo "Port 53 is in use" >> "${LOG_FILE}"
+        if pgrep "dhcpd.conf"; then  # if dhcpd (dnsmasq) is enabled and running
             echo "Port 0 - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
             echo "port=0" > /etc/dhcpd/dhcpd-custom-custom.conf
             echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-custom-custom.info
             /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
+        else
+            echo "pgrep: no process with 'dhcpd.conf' found" >> "${LOG_FILE}"
         fi
     else
-        echo "Port 53 is free" >> "${LOG_FILE}" 2>&1
+        echo "Port 53 is free" >> "${LOG_FILE}"
         rm -f /etc/dhcpd/dhcpd-custom-custom.conf
     fi
 }

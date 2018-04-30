@@ -5,7 +5,7 @@ PKG_DIST_SITE = https://github.com/PurpleI2P/i2pd/archive
 PKG_DIST_NAME = $(PKG_VERS).$(PKG_EXT)
 PKG_DIR = $(PKG_NAME)-$(PKG_VERS)
 
-DEPENDS = cross/openssl
+DEPENDS = cross/openssl cross/boost
 
 HOMEPAGE = https://geti2p.net/en/
 COMMENT  = The I2P network provides strong privacy protections for communication over the Internet. Many activities that would risk your privacy on the public Internet can be conducted anonymously inside I2P.
@@ -17,4 +17,4 @@ include ../../mk/spksrc.cross-cc.mk
 
 .PHONY: i2pd-Configure
 i2pd-Configure:
-	$(RUN) CMAKE build
+	$(RUN) cmake build

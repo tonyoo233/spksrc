@@ -4,11 +4,12 @@ SPK_REV = 0
 SPK_ICON = src/dnscrypt-proxy.png
 
 DEPENDS = cross/$(SPK_NAME)
+SPK_CONFLICT = DNSServer
 
 MAINTAINER = publicarray
 DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTP/2. https://github.com/jedisct1/dnscrypt-proxy
 DISPLAY_NAME = DNSCrypt-proxy
-HOMEPAGE = https://github.com/jedisct1/dnscrypt-proxy/wiki
+HELPURL = https://github.com/jedisct1/dnscrypt-proxy/wiki
 LICENSE = ISC
 CHANGELOG = "Added a GUI"
 

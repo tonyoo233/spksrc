@@ -1,3 +1,6 @@
+// HTML user interface for dnscrypt-proxy
+// Copyright Sebastian Schmidt
+// Licence MIT
 package main
 
 import (
@@ -39,6 +42,9 @@ type AuthJson struct {
     AppPrivilege AppPrivilege
 }
 
+// Retrieve login status and try to retrieve a CSRF token.
+// If either fails than we return an error to the user that they need to login.
+// Returns username or error
 func token() (string, error) {
     cmd := exec.Command("/usr/syno/synoman/webman/login.cgi")
     cmdOut, err := cmd.Output()
@@ -59,6 +65,8 @@ func token() (string, error) {
     return string(token[1]), nil
 }
 
+// Detect if the rune (character) contains '{' and therefore is likely to contain JSON
+// returns bool
 func findJson(r rune) bool {
     if r == '{' {
         return false
@@ -66,7 +74,9 @@ func findJson(r rune) bool {
     return true
 }
 
-func auth() string {
+// Check if the logged in user is Authorised or Admin.
+// If either fails than we return a HTTP Unauthorized error.
+func auth() {
     token, err := token()
     if err != nil {
         logUnauthorised(err.Error())
@@ -102,26 +112,30 @@ func auth() string {
     }
 
     os.Setenv("QUERY_STRING", tempQueryEnv)
-    return string(cmdOut)
+    return
 }
 
-func logError(str ...string) { // dump and die
+// Exit program with a HTTP Internal Error status code and a message (dump and die)
+func logError(str ...string) {
     fmt.Println("Status: 500 Internal server error\nContent-Type: text/html; charset=utf-8\n")
     fmt.Println(strings.Join(str, ", "))
     os.Exit(0)
 }
 
+// Exit program with a HTTP Unauthorized status code and a message (dump and die)
 func logUnauthorised(str ...string) { // dump and die
     fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n")
     fmt.Println(strings.Join(str, ", "))
     os.Exit(0)
 }
 
+// Exit program with a HTTP Not Found status code
 func notFound() {
     fmt.Println("Status: 404 Not Found\nContent-Type: text/html; charset=utf-8\n")
     os.Exit(0)
 }
 
+// Return true if the file path exists.
 func checkIfFileExists (file string) bool {
     _, err := os.Stat(file)
     if err != nil {
@@ -133,6 +147,7 @@ func checkIfFileExists (file string) bool {
     return true
 }
 
+// Read file from filepath and return the data as a string
 func loadFile(file string) string {
     if !checkIfFileExists(file) {
         newFile, err := os.Create(file)
@@ -149,6 +164,7 @@ func loadFile(file string) string {
     return string(data)
 }
 
+// Save file content (data) to the approved file path (fileKey)
 func saveFile(fileKey string, data string) {
     err := ioutil.WriteFile(rootDir+files[fileKey]+".tmp", []byte(data), 0644)
     if err != nil {
@@ -171,6 +187,7 @@ func saveFile(fileKey string, data string) {
     return
 }
 
+// Check the config file for syntax errors
 func checkConfFile(tmp bool) {
     var tmpExt string
     if tmp {
@@ -184,6 +201,7 @@ func checkConfFile(tmp bool) {
     }
 }
 
+// Look for command in $PATH
 func checkCmdExists(cmd string) bool {
     _, err := exec.LookPath(cmd)
     if err != nil {
@@ -192,6 +210,7 @@ func checkCmdExists(cmd string) bool {
     return true
 }
 
+// Use generate-domains-blacklist.py to Generate blacklist.txt
 func generateBlacklist () {
     if !checkCmdExists("python") {
         fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
@@ -213,6 +232,7 @@ func generateBlacklist () {
     saveFile("blacklist", string(stdout.Bytes()))
 }
 
+// Return HTMLfrom layout.html.
 func renderHtml(fileKey string, successMessage string, errorMessage string) {
     var page Page
     fileData := loadFile(rootDir + files[fileKey])
@@ -236,6 +256,7 @@ func renderHtml(fileKey string, successMessage string, errorMessage string) {
     os.Exit(0)
 }
 
+// Read GET parameters and return them as an Object
 func readGet() url.Values {
     queryStr := os.Getenv("QUERY_STRING")
     q, err := url.ParseQuery(queryStr)
@@ -245,6 +266,7 @@ func readGet() url.Values {
     return q
 }
 
+// Read POST parameters and return them as an Object
 func readPost() url.Values { // todo: stop on a max size (10mb?)
     // fixme: check/generate csrf token
     bytes, err := ioutil.ReadAll(os.Stdin) // if there is no data the process will block (wait)

@@ -94,7 +94,7 @@ service_postinst () {
 
     echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
     ## Allow cgi user to write to this file
-    ## chown dosn't work as it's overwritten. see page 104 in https://developer.synology.com/download/developer-guide.pdf
+    ## chown doesn't work as it's overwritten by the SynoCommunity install script. Also see page 104 in https://developer.synology.com/download/developer-guide.pdf
     # chown system /var/packages/dnscrypt-proxy/target/var/dnscrypt-proxy.toml
     ## Less than ideal solution, ToDo: find something better
     chmod 0666 "${SYNOPKG_PKGDEST}/var/dnscrypt-proxy.toml" >> "${INST_LOG}" 2>&1

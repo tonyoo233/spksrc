@@ -22,6 +22,7 @@ var dev *bool
 var rootDir string
 var files map[string]string
 
+// Data that is passed to the template (layout.html)
 type Page struct {
     Title          string
     FileData       string
@@ -31,13 +32,18 @@ type Page struct {
     Files          map[string]string
 }
 
+// Read JSON from /usr/syno/synoman/webman/initdata.cgi
 type AppPrivilege struct {
-    Is_permitted bool `json:"SYNO.SDS.DNSCryptProxy.Application"`
+    IsPermitted bool `json:"SYNO.SDS.DNSCryptProxy.Application"`
 }
+
+// Read JSON from /usr/syno/synoman/webman/initdata.cgi
 type Session struct {
-    Is_admin bool `json:"is_admin"`
+    IsAdmin bool `json:"is_admin"`
 }
-type AuthJson struct {
+
+// Read JSON from /usr/syno/synoman/webman/initdata.cgi
+type AuthJSON struct {
     Session      Session `json:"session"`
     AppPrivilege AppPrivilege
 }
@@ -51,7 +57,7 @@ func token() (string, error) {
     if err != nil && err.Error() != "exit status 255" { // in the Synology world, error code 255 apparently means success!
         return string(cmdOut), err
     }
-    // cmdOut = bytes.TrimLeftFunc(cmdOut, findJson)
+    // cmdOut = bytes.TrimLeftFunc(cmdOut, findJSON)
 
     // Content-Type: text/html [..] { "SynoToken" : "GqHdJil0ZmlhE", "result" : "success", "success" : true }
     r, err := regexp.Compile("SynoToken\" *: *\"([^\"]+)\"")
@@ -67,7 +73,7 @@ func token() (string, error) {
 
 // Detect if the rune (character) contains '{' and therefore is likely to contain JSON
 // returns bool
-func findJson(r rune) bool {
+func findJSON(r rune) bool {
     if r == '{' {
         return false
     }
@@ -98,16 +104,16 @@ func auth() {
     if err != nil {
         logUnauthorised(err.Error())
     }
-    cmdOut = bytes.TrimLeftFunc(cmdOut, findJson)
+    cmdOut = bytes.TrimLeftFunc(cmdOut, findJSON)
 
-    var jsonData AuthJson
+    var jsonData AuthJSON
     if err := json.Unmarshal(cmdOut, &jsonData); err != nil {  // performance hit
         logUnauthorised(err.Error())
     }
 
-    is_admin := jsonData.Session.Is_admin              // Session.is_admin:true
-    is_permitted := jsonData.AppPrivilege.Is_permitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
-    if !(is_admin || is_permitted) {
+    isAdmin := jsonData.Session.IsAdmin              // Session.IsAdmin:true
+    isPermitted := jsonData.AppPrivilege.IsPermitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
+    if !(isAdmin || isPermitted) {
         notFound()
     }
 
@@ -197,7 +203,7 @@ func checkConfFile(tmp bool) {
     cmd := exec.Command(rootDir+"/bin/dnscrypt-proxy", "-check", "-config", rootDir+files["config"]+tmpExt)
     out, err := cmd.CombinedOutput()
     if err != nil {
-        renderHtml("config", "", string(out)+err.Error())
+        renderHTML("config", "", string(out)+err.Error())
     }
 }
 
@@ -233,7 +239,7 @@ func generateBlacklist () {
 }
 
 // Return HTMLfrom layout.html.
-func renderHtml(fileKey string, successMessage string, errorMessage string) {
+func renderHTML(fileKey string, successMessage string, errorMessage string) {
     var page Page
     fileData := loadFile(rootDir + files[fileKey])
 
@@ -320,7 +326,7 @@ func main() {
         generateBlacklistStr := postData.Get("generateBlacklist")
         if fileData != "" && fileKey != "" {
             saveFile(fileKey, fileData)
-            renderHtml(fileKey, "File saved successfully!", "")
+            renderHTML(fileKey, "File saved successfully!", "")
             // fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
             // return
         } else if generateBlacklistStr != "" {
@@ -329,12 +335,12 @@ func main() {
             os.Exit(0)
 
         }
-        renderHtml("config", "", "No valid data submitted.")
+        renderHTML("config", "", "No valid data submitted.")
     }
 
     if fileKey := readGet().Get("file"); method == "GET" && fileKey != "" { // GET
-        renderHtml(fileKey, "", "")
+        renderHTML(fileKey, "", "")
     }
 
-    renderHtml("config", "", "")
+    renderHTML("config", "", "")
 }

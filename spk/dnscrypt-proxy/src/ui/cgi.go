@@ -216,7 +216,7 @@ func checkCmdExists(cmd string) bool {
     return true
 }
 
-// Use generate-domains-blacklist.py to Generate blacklist.txt
+// Execute generate-domains-blacklist.py to generate blacklist.txt
 func generateBlacklist () {
     if !checkCmdExists("python") {
         fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
@@ -238,7 +238,7 @@ func generateBlacklist () {
     saveFile("blacklist", string(stdout.Bytes()))
 }
 
-// Return HTMLfrom layout.html.
+// Return HTML from layout.html.
 func renderHTML(fileKey string, successMessage string, errorMessage string) {
     var page Page
     fileData := loadFile(rootDir + files[fileKey])
@@ -333,7 +333,6 @@ func main() {
             generateBlacklist()
             fmt.Println("Status: 200 OK\nContent-Type: text/plain; charset=utf-8\n")
             os.Exit(0)
-
         }
         renderHTML("config", "", "No valid data submitted.")
     }

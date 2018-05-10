@@ -295,14 +295,14 @@ func main() {
     dev = flag.Bool("dev", false, "Turns Authentication checks off")
     flag.Parse()
 
-    pwd, err := os.Getwd()
-    if err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
-    rootDir = pwd+"/test"
-
-    if !*dev {
+    if *dev { // test environment
+        pwd, err := os.Getwd()
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+        rootDir = pwd+"/test"
+    } else { // production environment
         auth()
         rootDir = "/var/packages/dnscrypt-proxy/target"
     }

@@ -22,7 +22,7 @@ var dev *bool
 var rootDir string
 var files map[string]string
 
-// Data that is passed to the template (layout.html)
+// Page contains the data that is passed to the template (layout.html)
 type Page struct {
     Title          string
     FileData       string
@@ -32,17 +32,17 @@ type Page struct {
     Files          map[string]string
 }
 
-// Read JSON from /usr/syno/synoman/webman/initdata.cgi
+// AppPrivilege is part of AuthJSON
 type AppPrivilege struct {
     IsPermitted bool `json:"SYNO.SDS.DNSCryptProxy.Application"`
 }
 
-// Read JSON from /usr/syno/synoman/webman/initdata.cgi
+// Session is part of AuthJSON
 type Session struct {
     IsAdmin bool `json:"is_admin"`
 }
 
-// Read JSON from /usr/syno/synoman/webman/initdata.cgi
+// AuthJSON is used to read JSON data from /usr/syno/synoman/webman/initdata.cgi
 type AuthJSON struct {
     Session      Session `json:"session"`
     AppPrivilege AppPrivilege

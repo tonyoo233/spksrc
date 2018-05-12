@@ -1,3 +1,2 @@
-bin:i2pd
-lib:libi2pd.a
-lib:libi2pdclient.a
+bin:bin/i2pd
+lib:lib/libi2pd.a

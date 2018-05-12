@@ -5,18 +5,23 @@ SPK_REV = 0
 
 DEPENDS = cross/$(SPK_NAME)
 
-MAINTAINER = SynoCommunity
+MAINTAINER = publicarray
 DESCRIPTION  = The I2P network provides strong privacy protections for communication over the Internet. Many activities that would risk your privacy on the public Internet can be conducted anonymously inside I2P.
 RELOAD_UI = no
 DISPLAY_NAME = i2pd
 STARTABLE = no
-CHANGELOG = "Initial release"
+CHANGELOG = Initial release
 
 HOMEPAGE   = https://geti2p.net/en/
 LICENSE    = BSD 3 Clause
 
-INSTALLER_SCRIPT = src/installer.sh
-SSS_SCRIPT       = src/dsm-control.sh
+STARTABLE = yes
+SERVICE_USER = auto
+SERVICE_SETUP = src/service-setup.sh
+SERVICE_PORT = 4444 # browsing the web via i2pd
+SERVICE_PORT_TITLE = HTTPProxy
+# SERVICE_PORT_ALL_USERS = false
+# SERVICE_URL = /
 
 INSTALL_PREFIX = /usr/local/$(SPK_NAME)
 

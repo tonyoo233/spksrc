@@ -26,7 +26,7 @@ dist: trusty
 script:
 - PKG=${TRAVIS_TAG%-*}
 - docker pull synocommunity/spksrc
-- travis_wait 45 docker run -it -v `pwd`:/spksrc synocommunity/spksrc /bin/bash -c "cd /spksrc &&
+- travis_wait 45 sleep infinity &; docker run -it -v `pwd`:/spksrc synocommunity/spksrc /bin/bash -c "cd /spksrc &&
   make setup && cd spk/$PKG && make $SYNOARCH>/dev/null"
 - ls packages/*.spk
 services:

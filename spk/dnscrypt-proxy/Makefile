@@ -1,5 +1,5 @@
 SPK_NAME = dnscrypt-proxy
-SPK_VERS = 2.0.12
+SPK_VERS = 2.0.13
 SPK_REV = 0
 SPK_ICON = src/dnscrypt-proxy.png
 
@@ -20,8 +20,7 @@ BETA = 1
 WIZARDS_DIR = src/wizard/
 DSM_UI_DIR = ui
 CONF_DIR = src/conf
-# FWPORTS_FILE = src/conf/dnscrypt-proxy.sc # doesn't work -> https://github.com/SynoCommunity/spksrc/wiki/Service-Support#worker-service-configuration-for-port
-
+FWPORTS = src/${SPK_NAME}.sc
 SERVICE_USER = auto
 SERVICE_SETUP = src/service-setup.sh
 SERVICE_PORT = 53

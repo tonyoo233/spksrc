@@ -125,6 +125,7 @@ else
   else
 	@echo firmware=\"3.1-1594\" >> $@
   endif
+endif
 ifneq ($(strip $(OS_MIN_VER)),)
 	@echo os_min_ver=\"$(OS_MIN_VER)\" >> $@
 else

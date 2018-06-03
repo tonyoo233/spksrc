@@ -11,4 +11,10 @@ HOMEPAGE = https://github.com/pypa/setuptools
 COMMENT  = Easily download, build, install, upgrade, and uninstall Python packages
 LICENSE  = PSF/ZPL
 
+PRE_CONFIGURE_TARGET = setupools_extra_configure
+
+.PHONY: setupools_extra_configure
+setupools_extra_configure:
+	@$(RUN) PYTHONPATH=$(PYTHONPATH) $(HOSTPYTHON) bootstrap.py
+
 include ../../mk/spksrc.python-module.mk

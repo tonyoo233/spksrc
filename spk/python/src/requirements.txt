@@ -25,8 +25,8 @@ six==1.11.0
 virtualenv==15.1.0
 
 # Cheetah and dependencies
-cheetah==2.4.4
-markdown==2.6.11
+#cheetah==2.4.4
+#markdown==2.6.11
 
 # Cryptography/pyOpenSSL/M2Crypto dependencies
 # These also depends on cross/cffi and cross/openssl,

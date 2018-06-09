@@ -2,19 +2,19 @@
    :alt: Download from Github Releases
    :target: https://github.com/publicarray/spksrc/releases
 
- .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/total.svg
+ .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/total.svg?maxAge=86400
    :alt: Github Total Releases
    :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
 
- .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/latest/total.svg
+ .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/latest/total.svg?maxAge=86400
    :alt: Github Latest Release
    :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
 
- .. image:: https://img.shields.io/travis/publicarray/spksrc.svg
+ .. image:: https://img.shields.io/travis/publicarray/spksrc.svg?maxAge=14400
    :alt: Travis
    :target: https://travis-ci.org/publicarray/spksrc
    
- .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
+ .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000
    :alt: license
    :target: LICENSE.md
 

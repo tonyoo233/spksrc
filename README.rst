@@ -1,3 +1,23 @@
+ .. image:: https://img.shields.io/badge/download-releases-blue.svg
+   :alt: Download from Github Releases
+   :target: https://github.com/publicarray/spksrc/releases
+
+ .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/total.svg
+   :alt: Github Total Releases
+   :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
+
+ .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/latest/total.svg
+   :alt: Github Latest Release
+   :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
+
+ .. image:: https://img.shields.io/travis/publicarray/spksrc.svg
+   :alt: Travis
+   :target: https://travis-ci.org/publicarray/spksrc
+   
+ .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
+   :alt: license
+   :target: LICENSE.md
+
 spksrc
 ======
 spksrc is a cross compilation framework intended to compile and package software for Synology NAS devices. Packages are made available via the `SynoCommunity repository`_.
@@ -44,6 +64,7 @@ Donate
 To support SynoCommunity, you can make a donation to its founder
 
   .. image:: https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif
+    :alt: Donate
     :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F6GDE5APQ4SBN
 
 

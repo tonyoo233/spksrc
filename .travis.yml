@@ -24,7 +24,7 @@ notifications:
 sudo: required
 dist: trusty
 before_script:
-- gzip -dc docker/spksrc.tar.gz | docker load
+- gzip -dc docker/spksrc.tar.gz | docker load || true
 script:
 - PKG=${TRAVIS_TAG%-*}
 - docker pull synocommunity/spksrc

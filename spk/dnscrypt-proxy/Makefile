@@ -11,10 +11,8 @@ DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protoc
 DISPLAY_NAME = DNSCrypt-proxy
 HELPURL = https://github.com/jedisct1/dnscrypt-proxy/wiki
 LICENSE = ISC
-CHANGELOG = "Added a GUI"
 
 STARTABLE = yes
-BETA = 1
 
 WIZARDS_DIR = src/wizard/
 DSM_UI_DIR = ui

@@ -151,8 +151,10 @@ endif
 ifneq ($(strip $(INSTUNINST_RESTART_SERVICES)),)
 	@echo instuninst_restart_services=\"$(INSTUNINST_RESTART_SERVICES)\" >> $@
 endif
+ifneq ($(strip $(RELOAD_UI)),)
 	@echo reloadui=\"$(RELOAD_UI)\" >> $@
-ifneq ($(strip $(STARTABLE)),)
+endif
+ifeq ($(STARTABLE),no)
 	@echo startable=\"$(STARTABLE)\" >> $@
 	@echo ctl_stop=\"$(STARTABLE)\" >> $@
 endif

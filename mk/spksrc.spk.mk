@@ -117,23 +117,18 @@ endif
 	@echo maintainer_url=\"$(MAINTAINER_URL)\" >> $@
 	@echo distributor=\"$(DISTRIBUTOR)\" >> $@
 	@echo distributor_url=\"$(DISTRIBUTOR_URL)\" >> $@
+
 ifneq ($(strip $(FIRMWARE)),)
 	@echo firmware=\"$(FIRMWARE)\" >> $@
-else
-  ifneq ($(strip $(TC_FIRMWARE)),)
-	@echo firmware=\"$(TC_FIRMWARE)\" >> $@
-  else
-	@echo firmware=\"3.1-1594\" >> $@
-  endif
-endif
-ifneq ($(strip $(OS_MIN_VER)),)
+else ifneq ($(strip $(OS_MIN_VER)),)
 	@echo os_min_ver=\"$(OS_MIN_VER)\" >> $@
-else
-    ifneq ($(strip $(TC_OS_MIN_VER)),)
+else ifneq ($(strip $(TC_FIRMWARE)),)
+	@echo firmware=\"$(TC_FIRMWARE)\" >> $@
+else ifneq ($(strip $(TC_OS_MIN_VER)),)
 	@echo os_min_ver=\"$(TC_OS_MIN_VER)\" >> $@
-  else
-	@echo os_min_ver=\"6.1-14715\" >> $@
-  endif
+else
+	@echo firmware=\"3.1-1594\" >> $@
+endif
 endif
 ifneq ($(strip $(BETA)),)
 	@echo report_url=\"$(REPORT_URL)\" >> $@
@@ -141,7 +136,7 @@ endif
 ifneq ($(strip $(HELPURL)),)
 	@echo helpurl=\"$(HELPURL)\" >> $@
 else
-  ifneq ($(strip $(HOMEPAGE)),)
+ ifneq ($(strip $(HOMEPAGE)),)
 	@echo helpurl=\"$(HOMEPAGE)\" >> $@
   endif
 endif

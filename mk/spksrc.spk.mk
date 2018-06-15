@@ -129,7 +129,6 @@ else ifneq ($(strip $(TC_OS_MIN_VER)),)
 else
 	@echo firmware=\"3.1-1594\" >> $@
 endif
-endif
 ifneq ($(strip $(BETA)),)
 	@echo report_url=\"$(REPORT_URL)\" >> $@
 endif

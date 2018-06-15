@@ -32,7 +32,21 @@
             <li><b>Save:</b> Saves the file to disk. You need to manually restart DNSCrypt-proxy to apply changes.</li>
         </ol>
         <p>For more detailed information I suggest you visit the <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki" target="_blank">dnscrypt-proxy wiki</a>.</p>
-        <h3>Optional: Network devices configuration</h3>
+        <h3>Optional: Individual device configuration</h3>
         <p><a href="https://1.1.1.1/#setup-instructions" target="_blank">Cloudflare</a> has some good instructions on how to change your DNS settings to point to a custom DNS server. Instead of <code>1.1.1.1</code> you need to use your Synology's IP address. e.g. <code>192.168.1.1<code></p>
+        <h3>Optional: Network configuration via DHCP</h3>
+        <p>This option allows Network wide encrypted DNS (unless a user overrides their own DNS settings. see above)</p>
+        <p>If DNSCrypt-Proxy is installed on a Synology Router open <bold>Network Center</bold> > <bold>Local Network</bold> and under 'DHCP server' change the <bold>Primary DNS</bold> to the Gateway IP address e.g. <code>192.168.1.1</code> and leave the <bold>Secondary DNS</bold> blank.</p>
+        <p>If DNSCrypt-Proxy is installed on a Synology NAS and the NAS is not running a DHCP server you need to change your Routers settings and find the DNS settings. Change the Primary DNS to the IP address of your NAS.</p>
+        <p>If DNSCrypt-Proxy is installed on a Synology NAS and the NAS is also running a DHCP server</p>
+            <ol>
+                <li>Open <bold>Control Panel</bold> > <bold>DHCP Server</bold> > <bold>Network Interface</bold>.</li>
+                <li>Select a network interface (e.g. LAN 1) to assign IP addresses to, and click <bold>Edit</bold></li>
+                <li>Change the Primary DNS to the the IP address of your NAS, should also be the IP of the Gateway</li>
+            </ol>
+        <h2>Test that everything is working correctly</h2>
+        <p>To see which servers are resolving your queries you can visit <a href="https://www.dnsleaktest.com/">dnsleaktest.com</a></p>
+        <p>If you prefer the command line you can use <code>dig whoami.akamai.net</code>, <code>drill resolver.dnscrypt.org</code> or <code>nslookup whoami.ultradns.net</code> to find out which resolver is currently in use. Using the output the <code>SERVER</code> should be the IP address of the device running DNSCrypt-Proxy. The IP address in the <code>ANSWER SECTION</code> should be your preferred DNS resolver. Note that on anycast networks like <code>1.1.1.1</code> or <code>8.8.8.8</code> the IPs will differ and can checked by the <a href="https://iptoasn.com/">ASN</a></p>
+        <p>If the DNS servers selected support DNSSEC you can test it <a href="https://dnssec.vs.uni-due.de/">here</a>.</p>
     </body>
 </html>

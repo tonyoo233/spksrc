@@ -1,28 +1,30 @@
+---
 version: 2
 shared: &shared
-    docker:
-      - image: synocommunity/spksrc:latest
-    working_directory: /spksrc
-    steps:
-      - checkout
-      - run PKG=${CIRCLE_TAG%-*}
-      - run: make setup
-      - run: cd spk/$PKG && make $SYNOARCH"
-      - run: ls packages/*.spk
-
+  docker:
+    - image: synocommunity/spksrc:latest
+  working_directory: /spksrc
+  steps:
+    - checkout
+    - run: PKG=${CIRCLE_TAG%-*}
+    - run: make setup
+    - run: cd spk/$PKG && make "$SYNOARCH"
+    - run: ls packages/*.spk
+tags_only_filter: &filter
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /.*/
 jobs:
   "x64-6.1":
     <<: *shared
     environment:
       - SYNOARCH=arch-x64-6.1
-  "arch-x64-5.2":
+  "x64-5.2":
     <<: *shared
     environment:
       - SYNOARCH=arch-arch-x64-5.2
-  "x64-6.1":
-    <<: *shared
-    environment:
-      - SYNOARCH=arch-x64-6.1
   "88f6281-6.1":
     <<: *shared
     environment:
@@ -87,89 +89,43 @@ jobs:
     <<: *shared
     environment:
       - SYNOARCH=arch-ppc853x-5.2
-
-
 workflows:
   version: 2
   tagged-build:
     jobs:
-      - "build-x64-6.1":
-          filters:
-            branches:
-              ignore: /.*/
       - "x64-6.1":
-          filters:
-            branches:
-              ignore: /.*/
-      - "arch-x64-5.2":
-          filters:
-            branches:
-              ignore: /.*/
-      - "x64-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
+      - "x64-5.2":
+          <<: *tags_only_filter
       - "88f6281-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "alpine-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "armada370-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "armada375-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "armada38x-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "armadaxp-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "comcerto2k-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "denverton-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "evansport-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "hi3535-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "ipq806x-1.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "monaco-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "northstarplus-1.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "qoriq-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "rtd1296-6.1":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter
       - "ppc853x-5.2":
-          filters:
-            branches:
-              ignore: /.*/
+          <<: *tags_only_filter

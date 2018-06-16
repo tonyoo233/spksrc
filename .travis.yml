@@ -23,19 +23,13 @@ notifications:
   email: false
 sudo: required
 dist: trusty
-before_script:
-- gzip -dc docker/spksrc.tar.gz | docker load || true
 script:
 - PKG=${TRAVIS_TAG%-*}
 - docker pull synocommunity/spksrc
-- docker save synocommunity/spksrc | gzip > docker/spksrc.tar.gz
 - travis_wait 45 sleep infinity &
 - docker run -it -v `pwd`:/spksrc synocommunity/spksrc /bin/bash -c "cd /spksrc &&
   make setup && cd spk/$PKG && make $SYNOARCH>/dev/null"
 - ls packages/*.spk
-cache:
-  directories:
-  - docker
 services:
 - docker
 git:

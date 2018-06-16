@@ -6,11 +6,20 @@ shared: &shared
   working_directory: /spksrc
   steps:
     - checkout
-    - run: PKG=${CIRCLE_TAG%-*}
     - run: make setup
-    - run: cd spk/$PKG && make "$SYNOARCH"
+    - restore_cache:
+        key: v1-toolchain-{{ .Environment.CIRCLE_JOB }}
+    - run:
+        name: Build
+        command: cd /spksrc/spk/${CIRCLE_TAG%-*} && make "$SYNOARCH"
+        no_output_timeout: 30m
+    - save_cache:
+        paths: /spksrc/toolchains
+        key: v1-toolchain-{{ .Environment.CIRCLE_JOB }}
     - run: ls packages/*.spk
-tags_only_filter: &filter
+    - store_artifacts:
+        path: packages
+tags_only_filter: &tags_only_filter
   filters:
     branches:
       ignore: /.*/
@@ -24,7 +33,7 @@ jobs:
   "x64-5.2":
     <<: *shared
     environment:
-      - SYNOARCH=arch-arch-x64-5.2
+      - SYNOARCH=arch-x64-5.2
   "88f6281-6.1":
     <<: *shared
     environment:
@@ -89,6 +98,18 @@ jobs:
     <<: *shared
     environment:
       - SYNOARCH=arch-ppc853x-5.2
+  deploy:
+    docker:
+      - image: alpine
+    environment:
+      GITHUB_USER: publicarray
+      GITHUB_REPO: spksrc
+    steps:
+      - checkout
+      - run: apk update
+      - run: apk add bash curl jq file grep coreutils
+      - deploy:
+          command: ./.circleci/deploy.sh
 workflows:
   version: 2
   tagged-build:
@@ -129,3 +150,24 @@ workflows:
           <<: *tags_only_filter
       - "ppc853x-5.2":
           <<: *tags_only_filter
+      - deploy:
+          <<: *tags_only_filter
+          requires:
+            - "x64-6.1"
+            - "x64-5.2"
+            - "88f6281-6.1"
+            - "alpine-6.1"
+            - "armada370-6.1"
+            - "armada375-6.1"
+            - "armada38x-6.1"
+            - "armadaxp-6.1"
+            - "comcerto2k-6.1"
+            - "denverton-6.1"
+            - "evansport-6.1"
+            - "hi3535-6.1"
+            - "ipq806x-1.1"
+            - "monaco-6.1"
+            - "northstarplus-1.1"
+            - "qoriq-6.1"
+            - "rtd1296-6.1"
+            - "ppc853x-5.2"

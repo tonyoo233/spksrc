@@ -77,7 +77,7 @@ main() {
             --arg tag "$CIRCLE_TAG" \
             --arg name "$CIRCLE_TAG" \
             --arg body "$_body" \
-            '{ tag_name: $tag, name: $name, body: $body, draft: false }'
+            '{ tag_name: $tag, name: $name, draft: false }'
     )
 
     _response=$(

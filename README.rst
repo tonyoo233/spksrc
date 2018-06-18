@@ -10,9 +10,9 @@
    :alt: Github Latest Release
    :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
 
- .. image:: https://img.shields.io/travis/publicarray/spksrc.svg?maxAge=14400
-   :alt: Travis
-   :target: https://travis-ci.org/publicarray/spksrc
+ .. image:: https://img.shields.io/circleci/project/github/publicarray/spksrc.svg?maxAge=14400
+   :alt: CI
+   :target: https://circleci.com/gh/publicarray/workflows/spksrc
    
  .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000
    :alt: license

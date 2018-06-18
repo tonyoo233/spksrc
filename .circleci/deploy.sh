@@ -63,13 +63,14 @@ main() {
     local _response
     local _upload_url
 
+    _body=""
     # Grab latest release notes from the Changelog
-    _body=$(
-        ensure cat CHANGELOG.md \
-        | ensure grep -Pzo '##.*\n\n\K\X*?(?=\n##|$)' \
-        | ensure tr '\0' '\n' \
-        | ensure head -n1
-    )
+    # _body=$(
+    #     ensure cat CHANGELOG.md \
+    #     | ensure grep -Pzo '##.*\n\n\K\X*?(?=\n##|$)' \
+    #     | ensure tr '\0' '\n' \
+    #     | ensure head -n1
+    # )
 
     _payload=$(
         jq --null-input \

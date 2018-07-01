@@ -47,7 +47,8 @@
             </ol>
         <h2>Test that everything is working correctly</h2>
         <p>To see which servers are resolving your queries you can visit <a href="https://www.dnsleaktest.com/" target="_blank">dnsleaktest.com</a></p>
-        <p>If you prefer the command line you can use <code>dig whoami.akamai.net</code>, <code>drill resolver.dnscrypt.org</code> or <code>nslookup whoami.ultradns.net</code> to find out which resolver is currently in use. Using the output the <code>SERVER</code> should be the IP address of the device running dnscrypt-proxy. The IP address in the <code>ANSWER SECTION</code> should be your preferred DNS resolver. Note that on anycast networks like <code>1.1.1.1</code> or <code>8.8.8.8</code> the IPs will differ and can checked by the <a href="https://iptoasn.com/" target="_blank">ASN</a></p>
+        <p>If you prefer the command line you can use <code>dig whoami.akamai.net</code>, <code>drill resolver.dnscrypt.org</code> or <code>nslookup whoami.ultradns.net</code> to find out which resolver is currently in use. Using the output the <code>SERVER</code> should be the IP address of the device running dnscrypt-proxy. The IP address in the <code>ANSWER SECTION</code> should be your preferred DNS resolver. Note that on anycast networks like <code>1.1.1.1</code> or <code>8.8.8.8</code> the IPs will differ and can checked by the <a href="https://iptoasn.com/" target="_blank">ASN</a>.</p>
+        <p>Also see the dnscrypt-proxy wiki on this topic: <a href="https://github.com/jedisct1/dnscrypt-proxy/wiki/Checking#checking-that-your-dns-traffic-is-encrypted-and-authenticated" target="_blank">Checking that your DNS traffic is encrypted and authenticated<p>
         <p>If the DNS servers selected support DNSSEC you can test it <a href="https://dnssec.vs.uni-due.de/" target="_blank">here</a>.</p>
     </body>
 </html>

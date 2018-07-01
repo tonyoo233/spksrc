@@ -7,7 +7,7 @@ DEPENDS = cross/$(SPK_NAME)
 SPK_CONFLICT = DNSServer
 
 MAINTAINER = publicarray
-DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTP/2. https://github.com/jedisct1/dnscrypt-proxy
+DESCRIPTION = A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTPS. https://github.com/jedisct1/dnscrypt-proxy
 DISPLAY_NAME = dnscrypt-proxy
 HELPURL = https://github.com/jedisct1/dnscrypt-proxy/wiki
 LICENSE = ISC

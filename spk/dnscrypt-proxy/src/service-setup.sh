@@ -30,23 +30,23 @@ pgrep () {
 }
 
 disable_dhcpd_dns_port () {
-    if [ "$1" == "no" ] && [ -f /etc/dhcpd/dhcpd-custom-custom.conf ]; then
+    if [ "$1" == "no" ] && [ -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf ]; then
         echo "Port 0 - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
-        echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-custom-custom.info
+        echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
         /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
     elif [ "$1" == "yes" ] && netstat -na | grep ":53 " >> "${LOG_FILE}" 2>&1; then
         echo "Port 53 is in use" >> "${LOG_FILE}"
         if pgrep "dhcpd.conf"; then  # if dhcpd (dnsmasq) is enabled and running
             echo "Port 0 - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
-            echo "port=0" > /etc/dhcpd/dhcpd-custom-custom.conf
-            echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-custom-custom.info
+            echo "port=0" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
+            echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
             /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
         else
             echo "pgrep: no process with 'dhcpd.conf' found" >> "${LOG_FILE}"
         fi
     else
         echo "Port 53 is free" >> "${LOG_FILE}"
-        rm -f /etc/dhcpd/dhcpd-custom-custom.conf
+        rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
     fi
 }
 
@@ -86,6 +86,7 @@ service_postinst () {
             -e "s/require_dnssec = .*/require_dnssec = true/" \
             -e "s/# server_names = .*/${server_names_enabled:-""}server_names = ${server_names}/" \
             -e "s/ipv6_servers = .*/ipv6_servers = ${wizard_ipv6:=false}/" \
+            -e "s/# user_name = .*/user_name = ${EFF_USER:-"nobody"}/" \
             "${CFG_FILE}" >> "${INST_LOG}" 2>&1
     fi
 
@@ -118,7 +119,7 @@ service_postuninst () {
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/index.conf" >> "${INST_LOG}" 2>&1
     rm -f /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
     disable_dhcpd_dns_port "no"
-    rm -f /etc/dhcpd/dhcpd-custom-custom.conf
-    rm -f /etc/dhcpd/dhcpd-custom-custom.info
+    rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
+    rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
 }
 ## rm -drf work-ipq806x-1.1/scripts && make arch-ipq806x-1.1

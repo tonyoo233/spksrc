@@ -113,6 +113,7 @@ service_postinst () {
 }
 
 service_postuninst () {
+    killall dnscrypt-proxy || true
     # shellcheck disable=SC2129
     echo "Uninstall Help files" >> "${INST_LOG}"
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/helptoc.conf" >> "${INST_LOG}" 2>&1

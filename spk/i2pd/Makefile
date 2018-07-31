@@ -1,6 +1,6 @@
 SPK_NAME = i2pd
-SPK_VERS = 2.18.0
-SPK_REV = 0
+SPK_VERS = 2.19.0
+SPK_REV = 1
 SPK_ICON = src/i2pd.png
 
 DEPENDS = cross/$(SPK_NAME)
@@ -13,7 +13,6 @@ STARTABLE = no
 CHANGELOG = Initial release
 
 HOMEPAGE   = https://geti2p.net/
-HELPURL    = https://i2pd.readthedocs.io/en/latest/
 LICENSE    = BSD 3 Clause
 
 STARTABLE = yes
@@ -22,7 +21,5 @@ SERVICE_SETUP = src/service-setup.sh
 ADMIN_PORT = 7070
 SERVICE_PORT = 4444
 SERVICE_PORT_TITLE = HTTP-Proxy
-
-INSTALL_PREFIX = /usr/local/$(SPK_NAME)
 
 include ../../mk/spksrc.spk.mk

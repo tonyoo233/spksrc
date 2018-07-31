@@ -1,5 +1,5 @@
 PKG_NAME = boost
-PKG_VERS = 1.67.0
+PKG_VERS = 1.63.0
 PKG_EXT = tar.bz2
 PKG_DIR = $(PKG_NAME)_$(subst .,_,$(PKG_VERS))
 PKG_DIST_NAME = $(PKG_DIR).$(PKG_EXT)

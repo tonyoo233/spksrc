@@ -277,7 +277,7 @@ func main() {
 		}
 		rootDir = pwd+"/test"
 	} else { // production environment
-		// auth()
+		auth()
 		rootDir = "/var/packages/dnscrypt-proxy/target"
 	}
 

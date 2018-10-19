@@ -107,9 +107,6 @@ service_postinst () {
     fi
 
     # shellcheck disable=SC2129
-    echo "Setting up the Web GUI..." >> "${INST_LOG}"
-    ln -s "${SYNOPKG_PKGDEST}/ui/" /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
-
     echo "Fixing permissions for cgi GUI..." >> "${INST_LOG}"
     ## Allow cgi user to write to this file. This is needed for the WebGUI / File editor.
     ## chown [user] doesn't work as it's overwritten by the SynoCommunity install script. Also see page 104 in https://developer.synology.com/download/developer-guide.pdf
@@ -133,7 +130,6 @@ service_postuninst () {
     echo "Uninstall Help files" >> "${INST_LOG}"
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/helptoc.conf" >> "${INST_LOG}" 2>&1
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/index.conf" >> "${INST_LOG}" 2>&1
-    rm -f /usr/syno/synoman/webman/3rdparty/dnscrypt-proxy >> "${INST_LOG}" 2>&1
     disable_dhcpd_dns_port "no"
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info

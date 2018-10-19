@@ -10,8 +10,8 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"net/http/cgi"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"os/exec"
 	"regexp"
@@ -99,22 +99,24 @@ func auth() {
 	}
 
 	// check permissions
-	cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi") // performance hit
-	cmdOut, err := cmd.Output()
-	if err != nil {
-		logUnauthorised(err.Error())
-	}
-	cmdOut = bytes.TrimLeftFunc(cmdOut, findJSON)
+	if (checkIfFileExists("/usr/syno/synoman/webman/initdata.cgi")) {
+		cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi") // performance hit
+		cmdOut, err := cmd.Output()
+		if err != nil {
+			logUnauthorised(err.Error())
+		}
+		cmdOut = bytes.TrimLeftFunc(cmdOut, findJSON)
 
-	var jsonData AuthJSON
-	if err := json.Unmarshal(cmdOut, &jsonData); err != nil {  // performance hit
-		logUnauthorised(err.Error())
-	}
+		var jsonData AuthJSON
+		if err := json.Unmarshal(cmdOut, &jsonData); err != nil {  // performance hit
+			logUnauthorised(err.Error())
+		}
 
-	isAdmin := jsonData.Session.IsAdmin              // Session.IsAdmin:true
-	isPermitted := jsonData.AppPrivilege.IsPermitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
-	if !(isAdmin || isPermitted) {
-		notFound()
+		isAdmin := jsonData.Session.IsAdmin              // Session.IsAdmin:true
+		isPermitted := jsonData.AppPrivilege.IsPermitted // AppPrivilege.SYNO.SDS.DNSCryptProxy.Application:true
+		if !(isAdmin || isPermitted) {
+			notFound()
+		}
 	}
 
 	os.Setenv("QUERY_STRING", tempQueryEnv)
@@ -123,21 +125,22 @@ func auth() {
 
 // Exit program with a HTTP Internal Error status code and a message (dump and die)
 func logError(str ...string) {
-	fmt.Println("Status: 500 Internal server error\nContent-Type: text/html; charset=utf-8\n")
-	fmt.Println(strings.Join(str, ", "))
+	//fmt.Print("Status: 500 Internal server error\r\nContent-Type: text/html; charset=utf-8\r\n\r\n")
+	fmt.Print("Status: 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n")
+	fmt.Print(strings.Join(str, ", "))
 	os.Exit(0)
 }
 
 // Exit program with a HTTP Unauthorized status code and a message (dump and die)
 func logUnauthorised(str ...string) { // dump and die
-	fmt.Println("Status: 401 Unauthorized\nContent-Type: text/html; charset=utf-8\n")
-	fmt.Println(strings.Join(str, ", "))
+	fmt.Print("Status: 401 Unauthorized\r\nContent-Type: text/html; charset=utf-8\r\n\r\n")
+	fmt.Print(strings.Join(str, ", "))
 	os.Exit(0)
 }
 
 // Exit program with a HTTP Not Found status code
 func notFound() {
-	fmt.Println("Status: 404 Not Found\nContent-Type: text/html; charset=utf-8\n")
+	fmt.Print("Status: 404 Not Found\r\nContent-Type: text/html; charset=utf-8\r\n\r\n")
 	os.Exit(0)
 }
 
@@ -194,9 +197,9 @@ func saveFile(fileKey string, data string) {
 }
 
 // Check the config file for syntax errors
-func checkConfFile(tmp bool) {
-	var tmpExt string
-	if tmp {
+func checkConfFile(yes bool) {
+	tmpExt := ""
+	if yes {
 		tmpExt = ".tmp"
 	}
 
@@ -219,9 +222,7 @@ func checkCmdExists(cmd string) bool {
 // Execute generate-domains-blacklist.py to generate blacklist.txt
 func generateBlacklist () {
 	if !checkCmdExists("python") {
-		fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
-		fmt.Println("Python could not be found or is not installed!")
-		os.Exit(0)
+		logError("Python could not be found or is not installed!")
 	}
 
 	var stdout, stderr bytes.Buffer
@@ -231,9 +232,7 @@ func generateBlacklist () {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Status: 500 OK\nContent-Type: text/plain; charset=utf-8\n")
-		fmt.Println(string(stderr.Bytes())+err.Error())
-		os.Exit(0)
+		logError(err.Error() + string(stdout.Bytes()) + string(stderr.Bytes()))
 	}
 	saveFile("blacklist", string(stdout.Bytes()))
 }
@@ -254,37 +253,12 @@ func renderHTML(fileKey string, successMessage string, errorMessage string) {
 	page.FileData = fileData
 	page.ErrorMessage = errorMessage
 	page.SuccessMessage = successMessage
-	fmt.Println("Status: 200 OK\nContent-Type: text/html; charset=utf-8\n")
+	fmt.Print("Status: 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n")
 	err = tmpl.Execute(os.Stdout, page)
 	if err != nil {
 		logError(err.Error())
 	}
 	os.Exit(0)
-}
-
-// Read GET parameters and return them as an Object
-func readGet() url.Values {
-	queryStr := os.Getenv("QUERY_STRING")
-	q, err := url.ParseQuery(queryStr)
-	if err != nil {
-		logError(err.Error())
-	}
-	return q
-}
-
-// Read POST parameters and return them as an Object
-func readPost() url.Values { // todo: stop on a max size (10mb?)
-	// fixme: check/generate csrf token
-	bytes, err := ioutil.ReadAll(os.Stdin) // if there is no data the process will block (wait)
-	if err != nil {
-		logError(err.Error())
-	}
-
-	q, err := url.ParseQuery(string(bytes))
-	if err != nil {
-		logError(err.Error())
-	}
-	return q
 }
 
 func main() {
@@ -303,7 +277,7 @@ func main() {
 		}
 		rootDir = pwd+"/test"
 	} else { // production environment
-		auth()
+		// auth()
 		rootDir = "/var/packages/dnscrypt-proxy/target"
 	}
 
@@ -319,12 +293,21 @@ func main() {
 	files["-domains-time-restricted"] = "/var/domains-time-restricted.txt"
 	files["-domains-blacklist-local-additions"] = "/var/domains-blacklist-local-additions.txt"
 
+	// Retrieve Form Values
+	httpReqest, err := cgi.Request()
+	if err != nil {
+		logError(err.Error())
+	}
+	if err = httpReqest.ParseForm(); err != nil {
+		logError(err.Error())
+	}
+
+	fileKey := strings.TrimSpace(httpReqest.FormValue("file"))
+	generateBlacklistStr := strings.TrimSpace(httpReqest.FormValue("generateBlacklist"))
+	fileData := httpReqest.FormValue("fileContent")
+
 	method := os.Getenv("REQUEST_METHOD")
 	if method == "POST" || method == "PUT" || method == "PATCH" { // POST
-		postData := readPost()
-		fileData := postData.Get("fileContent")
-		fileKey := postData.Get("file")
-		generateBlacklistStr := postData.Get("generateBlacklist")
 		if fileData != "" && fileKey != "" {
 			saveFile(fileKey, fileData)
 			renderHTML(fileKey, "File saved successfully!", "")
@@ -332,13 +315,13 @@ func main() {
 			// return
 		} else if generateBlacklistStr != "" {
 			generateBlacklist()
-			fmt.Println("Status: 200 OK\nContent-Type: text/plain; charset=utf-8\n")
+			fmt.Print("Status: 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n")
 			os.Exit(0)
 		}
 		renderHTML("config", "", "No valid data submitted.")
 	}
 
-	if fileKey := readGet().Get("file"); method == "GET" && fileKey != "" { // GET
+	if method == "GET" && fileKey != "" { // GET
 		renderHTML(fileKey, "", "")
 	}
 

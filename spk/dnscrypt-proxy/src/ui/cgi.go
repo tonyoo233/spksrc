@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"syscall"
 )
 
 var dev *bool
@@ -175,10 +176,28 @@ func loadFile(file string) string {
 
 // Save file content (data) to the approved file path (fileKey)
 func saveFile(fileKey string, data string) {
-	err := ioutil.WriteFile(rootDir+files[fileKey]+".tmp", []byte(data), 0644)
+	// If file exists get file info struct
+	fInfo, err := os.Stat(rootDir+files[fileKey])
 	if err != nil {
 		logError(err.Error())
 	}
+
+	// Get stat structure (for uid and gid)
+	stat := fInfo.Sys().(*syscall.Stat_t)
+
+	// Create file
+	file, err := os.Create(rootDir+files[fileKey]+".tmp")
+	if err != nil {
+		logError(err.Error())
+	}
+	defer file.Close()
+	_, err = file.Write([]byte(data))
+	if err != nil {
+		logError(err.Error())
+	}
+	// set owner and group id
+	file.Chown(int(stat.Uid), int(stat.Gid))
+	file.Sync()
 
 	if fileKey == "config" {
 		checkConfFile(true)

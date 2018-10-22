@@ -125,9 +125,12 @@
 
             const updateBlacklist = document.querySelector('.dnscrypt-proxy .updateBlacklist')
             updateBlacklist.addEventListener('submit', function(e) {
-                if (e.preventDefault) e.preventDefault()
-                toggleSpinner()
-                ajax('POST', 'generateBlacklist=true')
+                const urlParams = new URLSearchParams(window.location.search)
+                if (urlParams.get('file') !== 'blacklist') {
+                    if (e.preventDefault) e.preventDefault()
+                    toggleSpinner()
+                    ajax('POST', 'generateBlacklist=true')
+                }
             }, false)
 
         </script>

@@ -90,9 +90,6 @@
                         successMessage.offsetHeight //  trigger reflow
                         successMessage.innerText = "Saved changes!"
                         successMessage.style.animation = null;
-                        if (typeof successFn !== 'undefined') {
-                            successFn()
-                        }
                     } else {
                         console.error(request.status, request.responseText)
                         errorMessage = document.querySelector('.dnscrypt-proxy .error')
@@ -130,12 +127,7 @@
             updateBlacklist.addEventListener('submit', function(e) {
                 if (e.preventDefault) e.preventDefault()
                 toggleSpinner()
-                ajax('POST', 'generateBlacklist=true', function reload() {
-                    const urlParams = new URLSearchParams(window.location.search)
-                    if (urlParams.get('file') == 'blacklist') {
-                        location.reload(true)
-                    }
-                })
+                ajax('POST', 'generateBlacklist=true')
             }, false)
 
         </script>

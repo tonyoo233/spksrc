@@ -130,3 +130,8 @@ service_postuninst () {
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
 }
+
+service_postupgrade () {
+    # fix upgrade from 2.0.17-2 to 2.0.17_3
+    cp -f "${SYNOPKG_PKGDEST}"/offline-cache/generate-domains-blacklist.py "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
+}

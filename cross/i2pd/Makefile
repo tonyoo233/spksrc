@@ -32,7 +32,6 @@ i2pd-configure:
 		-DZLIB_ROOT=$(ZLIB_DIR) \
 		-DBOOST_ROOT=$(BOOST_DIR) \
 		-DCMAKE_PREFIX_PATH=$(WORK_DIR)/install/var/packages/i2pd/target/lib/pkgconfig \
-		-DWITH_AESNI=ON \
 		-DWITH_HARDENING=ON \
 		-DWITH_STATIC=ON \
 		-DWITH_LIBRARY=OFF \

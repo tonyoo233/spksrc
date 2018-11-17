@@ -59,15 +59,6 @@ Once you have a development environment set up, you can start building packages,
 See the `Developers HOW TO`_ for information on how to use spksrc.
 
 
-Donate
-------
-To support SynoCommunity, you can make a donation to its founder
-
-  .. image:: https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif
-    :alt: Donate
-    :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F6GDE5APQ4SBN
-
-
 License
 -------
 When not explicitly set, files are placed under a `3 clause BSD license`_

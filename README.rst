@@ -4,11 +4,11 @@
 
  .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/total.svg?maxAge=86400
    :alt: Github Total Releases
-   :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
+   :target: https://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
 
  .. image:: https://img.shields.io/github/downloads/publicarray/spksrc/latest/total.svg?maxAge=86400
    :alt: Github Latest Release
-   :target: http://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
+   :target: https://www.somsubhra.com/github-release-stats/?username=publicarray&repository=spksrc
 
  .. image:: https://img.shields.io/circleci/project/github/publicarray/spksrc.svg?maxAge=14400
    :alt: CI

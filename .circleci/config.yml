@@ -144,12 +144,12 @@ workflows:
           <<: *tags_only_filter
       - "northstarplus-1.1":
           <<: *tags_only_filter
-      - "qoriq-6.1":
-          <<: *tags_only_filter
+      # - "qoriq-6.1":
+      #     <<: *tags_only_filter
       - "rtd1296-6.1":
           <<: *tags_only_filter
-      - "ppc853x-5.2":
-          <<: *tags_only_filter
+      # - "ppc853x-5.2":
+      #     <<: *tags_only_filter
       - deploy:
           <<: *tags_only_filter
           requires:

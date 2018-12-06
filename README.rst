@@ -14,7 +14,7 @@
    :alt: CI
    :target: https://circleci.com/gh/publicarray/workflows/spksrc
    
- .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000
+ .. image:: https://img.shields.io/badge/license-BSD-green.svg
    :alt: license
    :target: LICENSE.md
 

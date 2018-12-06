@@ -1,0 +1,19 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "index_exclude_patterns": [
+                "*.log",
+                "toolchains/**",
+                "distrib/**",
+                "packages/**",
+                "native/*/work*",
+                "cross/*/work*",
+                "kernel/*/work*",
+                "spk/*/work*",
+                "toolchains/*/work*"
+            ]
+        }
+    ],
+}

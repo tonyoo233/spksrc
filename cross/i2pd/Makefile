@@ -1,9 +1,10 @@
 PKG_NAME = i2pd
-PKG_VERS = 2.18.0
+PKG_VERS = 2.23.0
 PKG_EXT = tar.gz
 PKG_DIST_SITE = https://github.com/PurpleI2P/i2pd/archive
 PKG_DIST_NAME = $(PKG_VERS).$(PKG_EXT)
 PKG_DIR = $(PKG_NAME)-$(PKG_VERS)
+PKG_DIST_FILE = $(PKG_NAME)-$(PKG_VERS).$(PKG_EXT)
 
 DEPENDS = cross/openssl cross/boost cross/zlib
 

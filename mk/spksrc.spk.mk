@@ -158,6 +158,11 @@ ifeq ($(STARTABLE),no)
 	@echo startable=\"$(STARTABLE)\" >> $@
 	@echo ctl_stop=\"$(STARTABLE)\" >> $@
 endif
+ifneq ($(strip $(PRECHECKSTARTSTOP)),)
+	ifeq ($(shell test $(TCVERSION) -gt 6; echo $$?),0)
+		@echo precheckstartstop=\"$(PRECHECKSTARTSTOP)\" >> $@
+	endif
+endif
 	@echo displayname=\"$(DISPLAY_NAME)\" >> $@
 ifneq ($(strip $(DSM_UI_DIR)),)
 	@echo dsmuidir=\"$(DSM_UI_DIR)\" >> $@

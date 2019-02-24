@@ -37,7 +37,7 @@ jobs:
   "88f6281-6.1":
     <<: *shared
     environment:
-      - SYNOARCH=arch-88f6281-6.1
+      - SYNOARCH=arch-88f6281-6.2
   "alpine-6.1":
     <<: *shared
     environment:

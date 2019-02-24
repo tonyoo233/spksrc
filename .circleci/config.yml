@@ -34,7 +34,7 @@ jobs:
     <<: *shared
     environment:
       - SYNOARCH=arch-x64-5.2
-  "88f6281-6.1":
+  "88f6281-6.2":
     <<: *shared
     environment:
       - SYNOARCH=arch-88f6281-6.2
@@ -118,7 +118,7 @@ workflows:
           <<: *tags_only_filter
       - "x64-5.2":
           <<: *tags_only_filter
-      - "88f6281-6.1":
+      - "88f6281-6.2":
           <<: *tags_only_filter
       - "alpine-6.1":
           <<: *tags_only_filter
@@ -155,7 +155,7 @@ workflows:
           requires:
             - "x64-6.1"
             - "x64-5.2"
-            - "88f6281-6.1"
+            - "88f6281-6.2"
             - "alpine-6.1"
             - "armada370-6.1"
             - "armada375-6.1"

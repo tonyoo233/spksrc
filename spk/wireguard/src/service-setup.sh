@@ -1,12 +1,14 @@
 SERVERPORT=51820
-SUBNET=172.23.0.0/24
+NETWORK=172.23.0.0/24 # why 172.23 ? because Synology SRM uses 172.22 and 172.21 for OpenVPN and L2TP/IPsec
+PID_FILE="${SYNOPKG_PKGDEST}/var/wireguard.pid"
 
+# Todo: survive a restart (help needed)
 start() {
-    # gen key
+    # generate keys
     [ -f /var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey ] || umask 077 && wg genkey | tee /var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey | wg pubkey > /var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey && umask 022
-    # allow editor to read the publickey
+    # allow synoeditor to read the publickey
     chmod 644 /var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey
-    # del and make new wg0 interface
+    # delete and make a new wg0 interface
     ip link del dev wg0 2>/dev/null || true
     ip link add dev wg0 type wireguard
 
@@ -50,13 +52,14 @@ ListenPort = $SERVERPORT
 EOF
     fi
     # load config
-    wg addconf wg0 /var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf
+    wg setconf wg0 /var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf
     # load private key
     wg set wg0 private-key /var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey
     # give clients an address space
-    ip address add dev wg0 ${SUBNET}
+    ip address add dev wg0 ${NETWORK}
     # set a listening port (already set in config file)
-    # wg set wg0 listen-port $SERVERPORT
+    #wg set wg0 listen-port $SERVERPORT
+    # start interface
     ip link set up dev wg0
 }
 
@@ -64,23 +67,27 @@ stop {
     ip link set down dev wg0
 }
 
-reload-config {
-    wg setconf wg0 /var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf
-}
-
 service_postinst () {
     # Put wg in the PATH
     mkdir -p /usr/local/bin /var/packages/${SYNOPKG_PKGNAME}/target/etc/ >> "${INST_LOG}" 2>&1
     ln -fs /var/packages/${SYNOPKG_PKGNAME}/target/bin/wg /usr/local/bin/wg >> "${INST_LOG}" 2>&1
+    # load kernel module and verify that is is loaded
     insmod /var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko >> "${INST_LOG}" 2>&1
     lsmod | grep wireguard >> "${INST_LOG}" 2>&1
+}
 
+service_prestart() {
     start
 }
 
+service_poststop () {
+    stop
+}
+
 service_postuninst () {
-    # Remove link
+    # Remove links
     rm -f /usr/local/bin/wg
     rm -rf /usr/local/etc/wireguard
+    # remove interface
     ip link del wg0 2>/dev/null || true
 }

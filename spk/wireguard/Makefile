@@ -1,5 +1,5 @@
 SPK_NAME = wireguard
-SPK_VERS = 0.0.20190123
+SPK_VERS = 0.0.20190227
 SPK_REV = 0
 SPK_ICON = src/wireguard.png
 
@@ -12,9 +12,6 @@ DISPLAY_NAME = WireGuard
 HELPURL = https://www.wireguard.com
 LICENSE = GPLv2
 
-STARTABLE = yes
+STARTABLE = no
 
-SERVICE_PORT = 51820
-SERVICE_PORT_TITLE = VPN
-SERVICE_EXE = $${SYNOPKG_PKGDEST}/bin/wg-quick
 include ../../mk/spksrc.spk.mk

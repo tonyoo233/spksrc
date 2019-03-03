@@ -1,5 +1,4 @@
 bin:bin/wg
-rsc:bin/wg-quick
 lib:lib/libmnl.a
 rsc:lib/libmnl.la
 rsc:wireguard.ko

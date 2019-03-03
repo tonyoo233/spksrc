@@ -1,16 +1,21 @@
 service_postinst () {
     # Put wg in the PATH
-    mkdir -vp /usr/local/bin /usr/local/etc/wireguard /opt/lib/modules >> "${INST_LOG}" 2>&1
-    ln -vs /var/packages/${SYNOPKG_PKGNAME}/target/bin/wg /usr/local/bin/wg >> "${INST_LOG}" 2>&1
-    ln -vs /var/packages/${SYNOPKG_PKGNAME}/target/bin/wg-quick /usr/local/bin/wg-quick >> "${INST_LOG}" 2>&1
-    ln -vs /var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko /opt/lib/modules/wireguard.ko >> "${INST_LOG}" 2>&1
-    insmod /opt/lib/modules/wireguard.ko >> "${INST_LOG}" 2>&1
+    mkdir -p /usr/local/bin /usr/local/etc/wireguard >> "${INST_LOG}" 2>&1
+    ln -fs /var/packages/${SYNOPKG_PKGNAME}/target/bin/wg /usr/local/bin/wg >> "${INST_LOG}" 2>&1
+    insmod /var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko >> "${INST_LOG}" 2>&1
+    lsmod | grep wireguard >> "${INST_LOG}" 2>&1
+
+    cd /usr/local/etc/wireguard || exit 1
+    umask 077
+    wg genkey | tee privatekey | wg pubkey > publickey
+    ip link add dev wg0 type wireguard
 }
 
 service_postuninst () {
     # Remove link
     rm -f /usr/local/bin/wg
-    rm -f /usr/local/bin/wg-quick
+    rm -rf /usr/local/etc/wireguard
+    ip link del wg0
 }
 
 

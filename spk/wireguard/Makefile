@@ -14,4 +14,5 @@ LICENSE = GPLv2
 
 STARTABLE = no
 
+SERVICE_SETUP = src/service-setup.sh
 include ../../mk/spksrc.spk.mk

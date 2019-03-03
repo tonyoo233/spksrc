@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker run -it --rm -v ~/git/spksrc:/spksrc synocommunity/spksrc /bin/bash
+docker run -it --rm -v $(pwd):/spksrc synocommunity/spksrc /bin/bash

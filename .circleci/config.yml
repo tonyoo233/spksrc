@@ -78,6 +78,10 @@ jobs:
     <<: *shared
     environment:
       - SYNOARCH=arch-ipq806x-1.1
+  "ipq806x-1.2":
+    <<: *shared
+    environment:
+      - SYNOARCH=arch-ipq806x-1.2
   "monaco-6.1":
     <<: *shared
     environment:
@@ -140,6 +144,8 @@ workflows:
           <<: *tags_only_filter
       - "ipq806x-1.1":
           <<: *tags_only_filter
+      - "ipq806x-1.2":
+          <<: *tags_only_filter
       - "monaco-6.1":
           <<: *tags_only_filter
       - "northstarplus-1.1":
@@ -166,6 +172,7 @@ workflows:
             - "evansport-6.1"
             - "hi3535-6.1"
             - "ipq806x-1.1"
+            - "ipq806x-1.2"
             - "monaco-6.1"
             - "northstarplus-1.1"
             # - "qoriq-6.1"

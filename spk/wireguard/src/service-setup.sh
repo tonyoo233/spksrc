@@ -4,7 +4,9 @@ NETWORK=172.23.0.1/24 # why 172.23 ? because Synology SRM uses 172.22 and 172.21
 INTERFACE=eth0
 # PID_FILE="${SYNOPKG_PKGDEST}/var/wireguard.pid"
 
-if grep -q zsh /etc/shells || grep -q bash /etc/shells; then
+# command is not available on the SRM
+#shellcheck disable=SC2230
+if [ -n "$(which bash)" ]|| [ -n "$(which zsh)" ]; then
     POSIX=0
 else
     POSIX=1
@@ -15,7 +17,7 @@ config() {
     if [ ! -f "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf" ]; then
         DDNS=$(grep -m 1 hostname= /etc/ddns.conf | cut -d = -f 2)
         if [ -n "$DDNS" ]; then
-            DDNS=$(dig +short myip.opendns.com @resolver1.opendns.com) || DDNS=$(wget -qO- https://checkip.amazonaws.com)
+            DDNS=$(nslookup myip.opendns.com resolver1.opendns.com | tail -n +3 | sed -n 's/Address .:\s*//p') || DDNS=$(wget -qO- https://checkip.amazonaws.com)
         fi
         server_privkey=$(wg genkey)
         client_privkey=$(wg genkey)
@@ -117,9 +119,18 @@ service_postinst () {
     # load kernel module and verify that is is loaded
     insmod "/var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko" >> "${INST_LOG}" 2>&1
     lsmod | grep wireguard >> "${INST_LOG}" 2>&1
+
+    # command is not available on the SRM
+    #shellcheck disable=SC2230
+    if [ -z "$(which bash)" ] && [ -n "$(which bash)" ]; then
+        # change shebang
+        sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env zsh/' /usr/local/bin/wg-quick
+    fi
 }
 
 service_prestart() {
+    # should be enabled anyway
+    # sysctl net.ipv4.ip_forward=1
     if [ $POSIX = 1 ]; then
         start_posix
     else

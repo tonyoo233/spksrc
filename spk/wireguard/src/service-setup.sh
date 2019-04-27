@@ -19,6 +19,8 @@ config() {
         fi
         server_privkey=$(wg genkey)
         client_privkey=$(wg genkey)
+        echo "$server_privkey" | wg pubkey > "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey"
+        chmod 644 "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey"
 cat<<EOF > "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf"
 # NOTICE - Work in Progress
 # WireGuard is not yet complete. You should not rely on this code.
@@ -115,11 +117,6 @@ service_postinst () {
     # load kernel module and verify that is is loaded
     insmod "/var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko" >> "${INST_LOG}" 2>&1
     lsmod | grep wireguard >> "${INST_LOG}" 2>&1
-
-    # generate keys
-    # [ -f "/var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey" ] || umask 077 && wg genkey | tee "/var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey" | wg pubkey > "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey" && umask 022
-    # allow synoeditor to read the publickey
-    chmod 644 "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey"
 }
 
 service_prestart() {

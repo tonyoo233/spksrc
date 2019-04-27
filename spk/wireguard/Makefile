@@ -12,7 +12,6 @@ DISPLAY_NAME = WireGuard
 HELPURL = https://www.wireguard.com
 LICENSE = GPLv2
 
-STARTABLE = no # todo
 FWPORTS = src/${SPK_NAME}.sc
 SERVICE_SETUP = src/service-setup.sh
 

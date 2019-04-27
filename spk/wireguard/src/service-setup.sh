@@ -14,16 +14,16 @@ fi
 
 config() {
     # if the config does not exist make one
-    if [ ! -f "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf" ]; then
+    if [ ! -f "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" ]; then
+        echo "Creating config file" >> "${LOG_FILE}" 2>&1
         DDNS=$(grep -m 1 hostname= /etc/ddns.conf | cut -d = -f 2)
-        if [ -n "$DDNS" ]; then
+        if [ -z "$DDNS" ]; then
             DDNS=$(nslookup myip.opendns.com resolver1.opendns.com | tail -n +3 | sed -n 's/Address .:\s*//p') || DDNS=$(wget -qO- https://checkip.amazonaws.com)
         fi
+        echo "Endpoint = $DDNS" >> "${LOG_FILE}" 2>&1
         server_privkey=$(wg genkey)
         client_privkey=$(wg genkey)
-        echo "$server_privkey" | wg pubkey > "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey"
-        chmod 644 "/var/packages/${SYNOPKG_PKGNAME}/target/etc/publickey"
-cat<<EOF > "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf"
+cat<<EOF > "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf"
 # NOTICE - Work in Progress
 # WireGuard is not yet complete. You should not rely on this code.
 # It has not undergone proper degrees of security auditing and the protocol
@@ -45,70 +45,74 @@ SaveConfig = true
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE
 
-# [Peer]
-# PublicKey = $(echo "$client_privkey" | wg pubkey)
-# AllowedIPs = 172.23.0.2/32 {{select a unique ip inside of $NETWORK}}
+[Peer]
+PublicKey = $(echo "$client_privkey" | wg pubkey)
+AllowedIPs = 172.23.0.2/32 # select a unique ip inside of $NETWORK
 
 ## Sample Client Configuration ##
 ## [Interface]
 ## PrivateKey = $server_privkey
-## Address = 172.23.0.2/32 {{select a unique ip inside of $NETWORK}}
+## Address = 172.23.0.2/32 # select a unique ip inside of $NETWORK
 ## DNS = 1.1.1.1
 ##
 ## [Peer]
 ## PublicKey = $(echo "$server_privkey" | wg pubkey)
 ## Endpoint = $DDNS:$SERVERPORT
-## AllowedIPs = 0.0.0.0/0, ::0
+## AllowedIPs = 0.0.0.0/0, ::/0
 ## # This is for if you're behind a NAT and
 ## # want the connection to be kept alive.
 ## PersistentKeepalive = 25
 ## # Optional
 ## # MTU = 1432
 EOF
+        # Allow synoedit to edit these files
+        echo "$server_privkey" | wg pubkey > "/var/packages/${SYNOPKG_PKGNAME}/target/var/publickey"
+        chmod 775 "/var/packages/${SYNOPKG_PKGNAME}/target/var" >> "${LOG_FILE}" 2>&1
+        chown :system "/var/packages/${SYNOPKG_PKGNAME}/target/var" >> "${LOG_FILE}" 2>&1
     fi
 }
 
 config_posix() {
-    if [ ! -f "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf" ]; then
+    if [ ! -f "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" ]; then
         config
         sed -i -e '/Address/s/^/#/g' \
             -e '/SaveConfig/s/^/#/g' \
             -e '/PostUp/s/^/#/g' \
             -e '/PostDown/s/^/#/g' \
-            /var/packages/"${SYNOPKG_PKGNAME}"/target/etc/wg0.conf
+            "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" >> "${LOG_FILE}" 2>&1
     fi
 }
 
 start_posix() {
     # delete and make a new wg0 interface
     ip link del dev wg0 2>/dev/null || true
-    ip link add dev wg0 type wireguard
+    ip link add dev wg0 type wireguard >> "${LOG_FILE}" 2>&1
 
     config_posix
 
     # load config
-    wg setconf wg0 "/var/packages/${SYNOPKG_PKGNAME}/target/etc/wg0.conf"
+    wg setconf wg0 "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" >> "${LOG_FILE}" 2>&1
     # load private key (already set in config file)
-    #wg set wg0 private-key "/var/packages/${SYNOPKG_PKGNAME}/target/etc/privatekey"
+    #wg set wg0 private-key "/var/packages/${SYNOPKG_PKGNAME}/target/var/privatekey"
     # give clients an address space
-    ip address add dev wg0 ${NETWORK}
+    ip address add dev wg0 ${NETWORK} >> "${LOG_FILE}" 2>&1
     # set a listening port (already set in config file)
     #wg set wg0 listen-port $SERVERPORT
     # start interface
-    ip link set up dev wg0
+    ip link set up dev wg0 >> "${LOG_FILE}" 2>&1
 
-    iptables -A FORWARD -i wg0 -j ACCEPT
-    ip6tables -A FORWARD -i wg0 -j ACCEPT
-    iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
-    ip6tables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
+    iptables -A FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    ip6tables -A FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
+    ip6tables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
 }
 
 stop_posix() {
-    ip link set down dev wg0
-    iptables -D FORWARD -i wg0 -j ACCEPT
-    ip6tables -D FORWARD -i wg0 -j ACCEPT
-    iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE
-    ip6tables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE
+    ip link set down dev wg0 >> "${LOG_FILE}" 2>&1
+    iptables -D FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    ip6tables -D FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
+    ip6tables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
 }
 
 service_postinst () {
@@ -120,30 +124,38 @@ service_postinst () {
     insmod "/var/packages/${SYNOPKG_PKGNAME}/target/wireguard.ko" >> "${INST_LOG}" 2>&1
     lsmod | grep wireguard >> "${INST_LOG}" 2>&1
 
-    # command is not available on the SRM
+    # "command" is not available on the SRM
     #shellcheck disable=SC2230
-    if [ -z "$(which bash)" ] && [ -n "$(which bash)" ]; then
+    if [ -z "$(which bash)" ] && [ -n "$(which zsh)" ]; then
+        # requires zsh with modules on the SRM
+        # https://synocommunity.com/package/zsh-static
+        echo "Changed wg-quick shebang to zsh shell">> "${INST_LOG}" 2>&1
         # change shebang
-        sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env zsh/' /usr/local/bin/wg-quick
+        sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env zsh/' \
+            -e 's/shopt -s extglob//' \
+            -e 's/SELF=.*/SELF="$(readlink "${(%):-%N}")"/' \
+        "/var/packages/${SYNOPKG_PKGNAME}/target/bin/wg-quick" >> "${LOG_FILE}" 2>&1
     fi
 }
 
 service_prestart() {
+    echo "service_prestart" >> "${LOG_FILE}" 2>&1
     # should be enabled anyway
     # sysctl net.ipv4.ip_forward=1
     if [ $POSIX = 1 ]; then
         start_posix
     else
         config
-        wg-quick up wg0
+        wg-quick up "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" >> "${LOG_FILE}" 2>&1
     fi
 }
 
 service_poststop () {
+    echo "service_poststop" >> "${LOG_FILE}" 2>&1
     if [ $POSIX = 1 ]; then
         stop_posix
     else
-        wg-quick down wg0
+        wg-quick down "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" >> "${LOG_FILE}" 2>&1
     fi
 }
 

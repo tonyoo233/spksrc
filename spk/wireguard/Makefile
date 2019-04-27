@@ -14,5 +14,7 @@ LICENSE = GPLv2
 
 FWPORTS = src/${SPK_NAME}.sc
 SERVICE_SETUP = src/service-setup.sh
+SERVICE_USER = auto
+STARTABLE = yes
 
 include ../../mk/spksrc.spk.mk

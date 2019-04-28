@@ -45,6 +45,10 @@ forward_dns_dhcpd () {
 service_prestart () {
     echo "service_preinst ${SYNOPKG_PKG_STATUS}" >> "${INST_LOG}"
 
+    # Install daily cron job, to update the block list
+    echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" >> /etc/crontab
+    synoservicectl --restart crond >> "${INST_LOG}"
+
     # This fixes https://github.com/SynoCommunity/spksrc/issues/3468
     # This can't be done at install time. see:
     #  https://github.com/SynoCommunity/spksrc/blob/e914a32600e65f80131ae09913f1b6f6a2dd8b13/mk/spksrc.service.installer#L307-L319
@@ -67,6 +71,9 @@ service_prestart () {
 
 service_poststop () {
     echo "After stop (service_poststop)" >> "${INST_LOG}"
+    # remove cron job
+    sed -i '/.*update-blocklist.sh/d' /etc/crontab
+    synoservicectl --restart crond >> "${INST_LOG}"
     forward_dns_dhcpd "no"
 }
 
@@ -127,6 +134,10 @@ service_postinst () {
 
 service_postuninst () {
     echo "service_postuninst ${SYNOPKG_PKG_STATUS}" >> "${INST_LOG}"
+    # remove cron job
+    sed -i '/.*update-blocklist.sh/d' /etc/crontab
+    synoservicectl --restart crond >> "${INST_LOG}"
+
     # shellcheck disable=SC2129
     echo "Uninstall Help files" >> "${INST_LOG}"
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/helptoc.conf" >> "${INST_LOG}" 2>&1

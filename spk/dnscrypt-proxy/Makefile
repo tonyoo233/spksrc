@@ -67,8 +67,9 @@ ENV += GOPATH="$(WORK_DIR)" \
 .PHONY: dnscrypt_extra_install
 dnscrypt_extra_install: copy_msg
 	@echo "===> Copying files"
-	mkdir -p $(STAGING_DIR)/offline-cache/
+	mkdir -p $(STAGING_DIR)/offline-cache/ $(STAGING_DIR)/blacklist/
 	cp -rf $(CURDIR)/src/offline-cache/* $(STAGING_DIR)/offline-cache/
+	install -m 755 $(CURDIR)/src/update-blocklist.sh $(STAGING_DIR)/blacklist/update-blocklist.sh
 	@echo "===> UI - Copying files"
 	mkdir -p $(STAGING_DIR)/$(DSM_UI_DIR)/
 	cp -rf $(CURDIR)/src/$(DSM_UI_DIR)/* $(STAGING_DIR)/$(DSM_UI_DIR)/

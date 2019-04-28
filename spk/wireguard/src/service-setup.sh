@@ -42,8 +42,8 @@ Address = $NETWORK
 ListenPort = $SERVERPORT
 PrivateKey = $server_privkey
 SaveConfig = true
-PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
-PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE
+PostUp = iptables -A SYNO_FORWARD_ACCEPT -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
+PostDown = iptables -D SYNO_FORWARD_ACCEPT -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE
 
 [Peer]
 PublicKey = $(echo "$client_privkey" | wg pubkey)
@@ -51,7 +51,7 @@ AllowedIPs = 172.23.0.2/32 # select a unique ip inside of $NETWORK
 
 ## Sample Client Configuration ##
 ## [Interface]
-## PrivateKey = $server_privkey
+## PrivateKey = $client_privkey
 ## Address = 172.23.0.2/32 # select a unique ip inside of $NETWORK
 ## DNS = 1.1.1.1
 ##
@@ -67,8 +67,8 @@ AllowedIPs = 172.23.0.2/32 # select a unique ip inside of $NETWORK
 EOF
         # Allow synoedit to edit these files
         echo "$server_privkey" | wg pubkey > "/var/packages/${SYNOPKG_PKGNAME}/target/var/publickey"
-        chmod 775 "/var/packages/${SYNOPKG_PKGNAME}/target/var" >> "${LOG_FILE}" 2>&1
-        chown :system "/var/packages/${SYNOPKG_PKGNAME}/target/var" >> "${LOG_FILE}" 2>&1
+        chmod 775 "/var/packages/${SYNOPKG_PKGNAME}/target/var/" >> "${LOG_FILE}" 2>&1
+        chown :system "/var/packages/${SYNOPKG_PKGNAME}/target/var/" >> "${LOG_FILE}" 2>&1
     fi
 }
 
@@ -101,18 +101,18 @@ start_posix() {
     # start interface
     ip link set up dev wg0 >> "${LOG_FILE}" 2>&1
 
-    iptables -A FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
-    ip6tables -A FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    iptables -A SYNO_FORWARD_ACCEPT -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    # ip6tables -A SYNO_FORWARD_ACCEPT -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
     iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
-    ip6tables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
+    # ip6tables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
 }
 
 stop_posix() {
     ip link set down dev wg0 >> "${LOG_FILE}" 2>&1
-    iptables -D FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
-    ip6tables -D FORWARD -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    iptables -D SYNO_FORWARD_ACCEPT -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
+    # ip6tables -D SYNO_FORWARD_ACCEPT -i wg0 -j ACCEPT >> "${LOG_FILE}" 2>&1
     iptables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
-    ip6tables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
+    # ip6tables -t nat -D POSTROUTING -o $INTERFACE -j MASQUERADE >> "${LOG_FILE}" 2>&1
 }
 
 service_postinst () {
@@ -129,12 +129,8 @@ service_postinst () {
     if [ -z "$(which bash)" ] && [ -n "$(which zsh)" ]; then
         # requires zsh with modules on the SRM
         # https://synocommunity.com/package/zsh-static
-        echo "Changed wg-quick shebang to zsh shell">> "${INST_LOG}" 2>&1
-        # change shebang
-        sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env zsh/' \
-            -e 's/shopt -s extglob//' \
-            -e 's/SELF=.*/SELF="$(readlink "${(%):-%N}")"/' \
-        "/var/packages/${SYNOPKG_PKGNAME}/target/bin/wg-quick" >> "${LOG_FILE}" 2>&1
+        echo "Download custom wg-quick compatable with the zsh shell" >> "${INST_LOG}" 2>&1
+        wget -q https://gist.githubusercontent.com/publicarray/97de680c5e158278de4fed7c67a6e7d7/raw/edb65ebf9bcac5a77293f67a0b965ac323b8bb98/wg-quick.zsh -O "/var/packages/${SYNOPKG_PKGNAME}/target/bin/wg-quick"
     fi
 }
 
@@ -156,6 +152,7 @@ service_poststop () {
         stop_posix
     else
         wg-quick down "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf" >> "${LOG_FILE}" 2>&1
+        chmod 744 "/var/packages/${SYNOPKG_PKGNAME}/target/var/wg0.conf"  >> "${LOG_FILE}" 2>&1
     fi
 }
 

@@ -20,6 +20,12 @@ blocklist_setup () {
     fi
 }
 
+blocklist_cron_uninstall () {
+    # remove cron job
+    sed -i '/.*update-blocklist.sh/d' /etc/crontab
+    synoservicectl --restart crond >> "${INST_LOG}" 2>&1
+}
+
 pgrep () {
     # shellcheck disable=SC2009,SC2153
     ps -w | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
@@ -71,9 +77,7 @@ service_prestart () {
 
 service_poststop () {
     echo "After stop (service_poststop)" >> "${INST_LOG}"
-    # remove cron job
-    sed -i '/.*update-blocklist.sh/d' /etc/crontab
-    synoservicectl --restart crond >> "${INST_LOG}"
+    blocklist_cron_uninstall
     forward_dns_dhcpd "no"
 }
 
@@ -134,9 +138,7 @@ service_postinst () {
 
 service_postuninst () {
     echo "service_postuninst ${SYNOPKG_PKG_STATUS}" >> "${INST_LOG}"
-    # remove cron job
-    sed -i '/.*update-blocklist.sh/d' /etc/crontab
-    synoservicectl --restart crond >> "${INST_LOG}"
+    blocklist_cron_uninstall
 
     # shellcheck disable=SC2129
     echo "Uninstall Help files" >> "${INST_LOG}"

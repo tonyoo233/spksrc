@@ -10,8 +10,8 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"net/http/cgi"
 	"io/ioutil"
+	"net/http/cgi"
 	"os"
 	"os/exec"
 	"regexp"
@@ -100,7 +100,7 @@ func auth() {
 	}
 
 	// check permissions
-	if (checkIfFileExists("/usr/syno/synoman/webman/initdata.cgi")) {
+	if checkIfFileExists("/usr/syno/synoman/webman/initdata.cgi") {
 		cmd = exec.Command("/usr/syno/synoman/webman/initdata.cgi") // performance hit
 		cmdOut, err := cmd.Output()
 		if err != nil {
@@ -109,7 +109,7 @@ func auth() {
 		cmdOut = bytes.TrimLeftFunc(cmdOut, findJSON)
 
 		var jsonData AuthJSON
-		if err := json.Unmarshal(cmdOut, &jsonData); err != nil {  // performance hit
+		if err := json.Unmarshal(cmdOut, &jsonData); err != nil { // performance hit
 			logUnauthorised(err.Error())
 		}
 
@@ -146,7 +146,7 @@ func notFound() {
 }
 
 // Return true if the file path exists.
-func checkIfFileExists (file string) bool {
+func checkIfFileExists(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -177,7 +177,7 @@ func loadFile(file string) string {
 // Save file content (data) to the approved file path (fileKey)
 func saveFile(fileKey string, data string) {
 	// If file exists get file info struct
-	fInfo, err := os.Stat(rootDir+files[fileKey])
+	fInfo, err := os.Stat(rootDir + files[fileKey])
 	if err != nil {
 		logError(err.Error())
 	}
@@ -186,7 +186,7 @@ func saveFile(fileKey string, data string) {
 	stat := fInfo.Sys().(*syscall.Stat_t)
 
 	// Create file
-	file, err := os.Create(rootDir+files[fileKey]+".tmp")
+	file, err := os.Create(rootDir + files[fileKey] + ".tmp")
 	if err != nil {
 		logError(err.Error())
 	}
@@ -239,14 +239,14 @@ func checkCmdExists(cmd string) bool {
 }
 
 // Execute generate-domains-blacklist.py to generate blacklist.txt
-func generateBlacklist () {
+func generateBlocklist() {
 	if !checkCmdExists("python") {
 		logError("Python could not be found or is not installed!")
 	}
 
 	var stderr bytes.Buffer
 	cmd := exec.Command("python", rootDir+"/var/generate-domains-blacklist.py")
-	cmd.Dir = rootDir+"/var"
+	cmd.Dir = rootDir + "/var"
 	cmd.Stderr = &stderr
 	stdout, err := cmd.Output()
 	if err != nil {
@@ -293,7 +293,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		rootDir = pwd+"/test"
+		rootDir = pwd + "/test"
 	} else { // production environment
 		auth()
 		rootDir = "/var/packages/dnscrypt-proxy/target"
@@ -321,7 +321,7 @@ func main() {
 	}
 
 	fileKey := strings.TrimSpace(httpReqest.FormValue("file"))
-	generateBlacklistStr := strings.TrimSpace(httpReqest.FormValue("generateBlacklist"))
+	generateBlocklistStr := strings.TrimSpace(httpReqest.FormValue("generateBlacklist"))
 	fileData := httpReqest.FormValue("fileContent")
 
 	method := os.Getenv("REQUEST_METHOD")
@@ -331,8 +331,8 @@ func main() {
 			renderHTML(fileKey, "File saved successfully!", "")
 			// fmt.Println("Status: 200 OK\nContent-Type: text/plain;\n")
 			// return
-		} else if generateBlacklistStr != "" {
-			generateBlacklist()
+		} else if generateBlocklistStr != "" {
+			generateBlocklist()
 			if fileKey == "blacklist" {
 				renderHTML(fileKey, "File saved successfully!", "")
 			}

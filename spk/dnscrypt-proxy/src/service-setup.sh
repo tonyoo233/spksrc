@@ -88,7 +88,7 @@ service_postinst () {
         # shellcheck disable=SC2086
         cp -f ${EXAMPLE_FILES} "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
         cp -f "${SYNOPKG_PKGDEST}"/offline-cache/* "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
-        cp -f "${SYNOPKG_PKGDEST}"/blacklist/* "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
+        cp -f "${SYNOPKG_PKGDEST}"/blocklist/* "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
         for file in ${SYNOPKG_PKGDEST}/var/example-*; do
             mv "${file}" "${file//example-/}" >> "${INST_LOG}" 2>&1
         done

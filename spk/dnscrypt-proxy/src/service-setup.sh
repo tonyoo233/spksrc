@@ -22,7 +22,7 @@ blocklist_setup () {
 
 blocklist_cron_uninstall () {
     # remove cron job
-    rm /etc/cron.d/dnscrypt-proxy-update-blocklist
+    sed -i '/.*update-blocklist.sh/d' /etc/crontab
     synoservicectl --restart crond >> "${INST_LOG}" 2>&1
 }
 
@@ -53,7 +53,7 @@ service_prestart () {
 
     # Install daily cron job (3 minutes past midnight), to update the block list
     mkdir -p /etc/cron.d
-    echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" > /etc/cron.d/dnscrypt-proxy-update-blocklist
+    echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" >> /etc/crontab
     synoservicectl --restart crond >> "${INST_LOG}"
 
     # This fixes https://github.com/SynoCommunity/spksrc/issues/3468

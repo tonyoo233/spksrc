@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Add's randomness when running cron job (0-30 minutes)
+# Add randomness when running cron job (0-30 minutes)
 # Be nice to servers and don't update at exactly midnight at the same time
 # shellcheck disable=SC2039
 [ -n "$RANDOM" ] && sleep $((RANDOM % 1800))

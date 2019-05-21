@@ -25,6 +25,7 @@ SERVICE_PORT = 53
 SERVICE_PORT_TITLE = DNS
 NO_SERVICE_SHORTCUT = true
 SERVICE_PORT_ALL_USERS = false
+STARTSTOP_RESTART_SERVICE = cron
 SERVICE_TYPE = legacy
 SERVICE_URL = /webman/3rdparty/dnscrypt-proxy/index.cgi
 

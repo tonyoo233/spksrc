@@ -8,6 +8,14 @@ BACKUP_PORT="10053"
 ## I need root to bind to port 53 see `service_prestart()` below
 #SERVICE_COMMAND="${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE} &"
 
+is_DSM () {
+    echo "Version detected: $SYNOPKG_DSM_VERSION_MAJOR.$SYNOPKG_DSM_VERSION_MINOR-$SYNOPKG_DSM_VERSION_BUILD" >> "${INST_LOG}" 2>&1
+    if [ "$SYNOPKG_DSM_VERSION_MAJOR" -gt 1 ];then
+        return 0 # using return code 0=true
+    fi
+    return 1 # using return code 1=false
+}
+
 blocklist_setup () {
     ## https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists
     ## https://github.com/jedisct1/dnscrypt-proxy/tree/master/utils/generate-domains-blacklists
@@ -52,8 +60,12 @@ service_prestart () {
     echo "service_preinst ${SYNOPKG_PKG_STATUS}" >> "${INST_LOG}"
 
     # Install daily cron job (3 minutes past midnight), to update the block list
-    mkdir -p /etc/cron.d
-    echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" >> /etc/crontab
+    if is_DSM; then
+        mkdir -p /etc/cron.d
+        echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" >> /etc/cron.d/dnscrypt-proxy-update-blocklist
+    else # RSM
+        echo "3       0       *       *       *       root    /var/packages/dnscrypt-proxy/target/var/update-blocklist.sh" >> /etc/crontab
+    fi
     synoservicectl --restart crond >> "${INST_LOG}"
 
     # This fixes https://github.com/SynoCommunity/spksrc/issues/3468

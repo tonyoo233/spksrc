@@ -252,7 +252,7 @@ func generateBlocklist() {
 	if err != nil {
 		logError(err.Error() + string(stdout) + string(stderr.Bytes()))
 	}
-	saveFile("blacklist", string(stdout))
+	saveFile("blocklist", string(stdout))
 }
 
 // Return HTML from layout.html.

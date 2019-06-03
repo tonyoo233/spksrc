@@ -238,7 +238,7 @@ func checkCmdExists(cmd string) bool {
 	return true
 }
 
-// Execute generate-domains-blacklist.py to generate blacklist.txt
+// Execute generate-domains-blacklist.py to generate blocklist.txt
 func generateBlocklist() {
 	if !checkCmdExists("python") {
 		logError("Python could not be found or is not installed!")
@@ -301,15 +301,15 @@ func main() {
 
 	files = make(map[string]string)
 	files["config"] = "/var/dnscrypt-proxy.toml"
-	files["blacklist"] = "/var/blacklist.txt"
-	files["ip-blacklist"] = "/var/ip-blacklist.txt"
+	files["blocklist"] = "/var/blocklist.txt"
+	files["ip-blocklist"] = "/var/ip-blocklist.txt"
 	files["cloaking"] = "/var/cloaking-rules.txt"
 	files["forwarding"] = "/var/forwarding-rules.txt"
 	files["whitelist"] = "/var/whitelist.txt"
-	files["-domains-blacklist"] = "/var/domains-blacklist.conf" // - is used for ordering
+	files["-domains-blocklist"] = "/var/domains-blacklist.conf" // - is used for ordering
 	files["-domains-whitelist"] = "/var/domains-whitelist.txt"
 	files["-domains-time-restricted"] = "/var/domains-time-restricted.txt"
-	files["-domains-blacklist-local-additions"] = "/var/domains-blacklist-local-additions.txt"
+	files["-domains-blocklist-local-additions"] = "/var/domains-blacklist-local-additions.txt"
 
 	// Retrieve Form Values
 	httpReqest, err := cgi.Request()
@@ -321,7 +321,7 @@ func main() {
 	}
 
 	fileKey := strings.TrimSpace(httpReqest.FormValue("file"))
-	generateBlocklistStr := strings.TrimSpace(httpReqest.FormValue("generateBlacklist"))
+	generateBlocklistStr := strings.TrimSpace(httpReqest.FormValue("generateBlocklist"))
 	fileData := httpReqest.FormValue("fileContent")
 
 	method := os.Getenv("REQUEST_METHOD")
@@ -333,7 +333,7 @@ func main() {
 			// return
 		} else if generateBlocklistStr != "" {
 			generateBlocklist()
-			if fileKey == "blacklist" {
+			if fileKey == "blocklist" {
 				renderHTML(fileKey, "File saved successfully!", "")
 			}
 			fmt.Print("Status: 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n")

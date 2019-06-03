@@ -13,7 +13,7 @@ blocklist_setup () {
     ## https://github.com/jedisct1/dnscrypt-proxy/tree/master/utils/generate-domains-blacklists
     echo "Install/Upgrade generate-domains-blacklist.py (requires python)" >> "${INST_LOG}"
     mkdir -p "${SYNOPKG_PKGDEST}/var"
-    touch "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt
+    touch "${SYNOPKG_PKGDEST}"/var/ip-blocklist.txt
     if [ ! -e "${SYNOPKG_PKGDEST}/var/domains-blacklist.conf" ]; then
         wget -t 3 -O "${SYNOPKG_PKGDEST}/var/domains-blacklist.conf" \
             --https-only https://raw.githubusercontent.com/jedisct1/dnscrypt-proxy/master/utils/generate-domains-blacklists/domains-blacklist.conf
@@ -90,6 +90,7 @@ service_postinst () {
         cp -f ${EXAMPLE_FILES} "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
         cp -f "${SYNOPKG_PKGDEST}"/offline-cache/* "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
         cp -f "${SYNOPKG_PKGDEST}"/blocklist/* "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
+        # shellcheck disable=SC2231
         for file in ${SYNOPKG_PKGDEST}/var/example-*; do
             mv "${file}" "${file//example-/}" >> "${INST_LOG}" 2>&1
         done
@@ -153,4 +154,8 @@ service_postuninst () {
 service_postupgrade () {
     # upgrade script when the offline-cache is also updated
     cp -f "${SYNOPKG_PKGDEST}"/blacklist/generate-domains-blacklist.py "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
+
+    # blacklist -> blocklist
+    [ -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt ] && mv -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt "${SYNOPKG_PKGDEST}"/var/ip-blocklist.txt
+    [ -f "${SYNOPKG_PKGDEST}"/var/blacklist.txt ] && mv -f "${SYNOPKG_PKGDEST}"/var/blacklist.txt "${SYNOPKG_PKGDEST}"/var/blocklist.txt
 }

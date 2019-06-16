@@ -9,12 +9,18 @@ BACKUP_PORT="10053"
 #SERVICE_COMMAND="${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE} &"
 
 is_DSM () {
-    echo "Version detected: $SYNOPKG_DSM_VERSION_MAJOR.$SYNOPKG_DSM_VERSION_MINOR-$SYNOPKG_DSM_VERSION_BUILD" >> "${INST_LOG}" 2>&1
-    if [ "$SYNOPKG_DSM_VERSION_MAJOR" -gt 1 ];then
+    if uname -n == "dsm";then
         return 0 # using return code 0=true
     fi
     return 1 # using return code 1=false
 }
+
+echo "Version detected: $SYNOPKG_DSM_VERSION_MAJOR.$SYNOPKG_DSM_VERSION_MINOR-$SYNOPKG_DSM_VERSION_BUILD" >> "${INST_LOG}" 2>&1
+if is_DSM; then
+    echo "Is DSM?: Yes" >> "${INST_LOG}" 2>&1
+else # RSM
+    echo "Is DSM?: No" >> "${INST_LOG}" 2>&1
+fi
 
 blocklist_setup () {
     ## https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists
@@ -35,8 +41,13 @@ blocklist_cron_uninstall () {
 }
 
 pgrep () {
-    # shellcheck disable=SC2009,SC2153
-    ps -w | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
+    if is_DSM; then
+        # shellcheck disable=SC2009,SC2153
+        ps aux | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
+    else
+        # shellcheck disable=SC2009,SC2153
+        ps -w | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
+    fi
 }
 
 forward_dns_dhcpd () {
@@ -47,8 +58,13 @@ forward_dns_dhcpd () {
     elif [ "$1" == "yes" ]; then
         if pgrep "dhcpd.conf"; then  # if dhcpd (dnsmasq) is enabled and running
             echo "dns forwarding - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
-            echo "server=127.0.0.1#${BACKUP_PORT}" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
-            echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
+            if is_DSM; then
+                echo "server=127.0.0.1#${BACKUP_PORT}" > /etc/dhcpd/dhcpd-dnscrypt.conf
+                echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-dnscrypt.info
+            else # RSM
+                echo "server=127.0.0.1#${BACKUP_PORT}" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
+                echo "enable=\"$1\"" > /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
+            fi
             /etc/rc.network nat-restart-dhcp >> "${LOG_FILE}" 2>&1
         else
             echo "pgrep: no process with 'dhcpd.conf' found" >> "${LOG_FILE}"
@@ -159,13 +175,15 @@ service_postuninst () {
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/helptoc.conf" >> "${INST_LOG}" 2>&1
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/index.conf" >> "${INST_LOG}" 2>&1
     disable_dhcpd_dns_port "no"
+    rm -f /etc/dhcpd/dhcpd-dnscrypt.conf
+    rm -f /etc/dhcpd/dhcpd-dnscrypt.info
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
 }
 
 service_postupgrade () {
     # upgrade script when the offline-cache is also updated
-    cp -f "${SYNOPKG_PKGDEST}"/blacklist/generate-domains-blacklist.py "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
+    cp -f "${SYNOPKG_PKGDEST}"/blocklist/generate-domains-blacklist.py "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
 
     # blacklist -> blocklist
     [ -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt ] && mv -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt "${SYNOPKG_PKGDEST}"/var/ip-blocklist.txt

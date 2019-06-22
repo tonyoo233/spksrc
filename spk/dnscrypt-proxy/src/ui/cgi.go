@@ -238,7 +238,7 @@ func checkCmdExists(cmd string) bool {
 	return true
 }
 
-// Execute generate-domains-blacklist.py to generate blocklist.txt
+// Execute generate-domains-blacklist.py to generate blacklist.txt
 func generateBlocklist() {
 	if !checkCmdExists("python") {
 		logError("Python could not be found or is not installed!")
@@ -301,8 +301,8 @@ func main() {
 
 	files = make(map[string]string)
 	files["config"] = "/var/dnscrypt-proxy.toml"
-	files["blocklist"] = "/var/blocklist.txt"
-	files["ip-blocklist"] = "/var/ip-blocklist.txt"
+	files["blocklist"] = "/var/blacklist.txt"
+	files["ip-blocklist"] = "/var/ip-blacklist.txt"
 	files["cloaking"] = "/var/cloaking-rules.txt"
 	files["forwarding"] = "/var/forwarding-rules.txt"
 	files["whitelist"] = "/var/whitelist.txt"

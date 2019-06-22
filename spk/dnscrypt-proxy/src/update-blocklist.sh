@@ -6,5 +6,5 @@
 [ -n "$RANDOM" ] && sleep $((RANDOM % 1800))
 
 cd /var/packages/dnscrypt-proxy/target/var/ || exit
-/usr/bin/env python generate-domains-blacklist.py > blocklist.txt.tmp && mv -f blocklist.txt.tmp blocklist.txt
-echo "## Last updated at: $(date)" >> blocklist.txt
+/usr/bin/env python generate-domains-blacklist.py > blacklist.txt.tmp && mv -f blacklist.txt.tmp blacklist.txt
+echo "## Last updated at: $(date)" >> blacklist.txt

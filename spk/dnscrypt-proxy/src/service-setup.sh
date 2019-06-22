@@ -184,8 +184,4 @@ service_postuninst () {
 service_postupgrade () {
     # upgrade script when the offline-cache is also updated
     cp -f "${SYNOPKG_PKGDEST}"/blocklist/generate-domains-blacklist.py "${SYNOPKG_PKGDEST}/var/" >> "${INST_LOG}" 2>&1
-
-    # blacklist -> blocklist
-    [ -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt ] && mv -f "${SYNOPKG_PKGDEST}"/var/ip-blacklist.txt "${SYNOPKG_PKGDEST}"/var/ip-blocklist.txt
-    [ -f "${SYNOPKG_PKGDEST}"/var/blacklist.txt ] && mv -f "${SYNOPKG_PKGDEST}"/var/blacklist.txt "${SYNOPKG_PKGDEST}"/var/blocklist.txt
 }

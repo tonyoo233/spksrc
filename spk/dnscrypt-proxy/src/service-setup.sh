@@ -174,8 +174,8 @@ service_postuninst () {
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/helptoc.conf" >> "${INST_LOG}" 2>&1
     pkgindexer_del "${SYNOPKG_PKGDEST}/ui/index.conf" >> "${INST_LOG}" 2>&1
     disable_dhcpd_dns_port "no"
-    rm -f /etc/dhcpd/dhcpd-dnscrypt.conf
-    rm -f /etc/dhcpd/dhcpd-dnscrypt.info
+    rm -f /etc/dhcpd/dhcpd-dns-dns.conf
+    rm -f /etc/dhcpd/dhcpd-dns-dns.info
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf
     rm -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.info
 }

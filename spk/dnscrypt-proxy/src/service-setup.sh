@@ -8,9 +8,13 @@ BACKUP_PORT="10053"
 ## I need root to bind to port 53 see `service_prestart()` below
 #SERVICE_COMMAND="${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE} &"
 
-OS=$(uname -n 2>"${INST_LOG}")
-echo "OS: $OS" >> "${INST_LOG}" 2>&1
 echo "Version: $SYNOPKG_DSM_VERSION_MAJOR.$SYNOPKG_DSM_VERSION_MINOR-$SYNOPKG_DSM_VERSION_BUILD" >> "${INST_LOG}" 2>&1
+if [ "$SYNOPKG_DSM_VERSION_MAJOR" -gt 1 ]; then
+    OS="dsm"
+else
+    OS="srm"
+fi
+echo "OS: $OS" >> "${INST_LOG}" 2>&1
 
 blocklist_setup () {
     ## https://github.com/jedisct1/dnscrypt-proxy/wiki/Public-blacklists

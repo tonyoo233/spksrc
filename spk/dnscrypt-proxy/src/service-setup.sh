@@ -9,7 +9,7 @@ BACKUP_PORT="10053"
 #SERVICE_COMMAND="${DNSCRYPT_PROXY} --config ${CFG_FILE} --pidfile ${PID_FILE} &"
 
 echo "Version: $SYNOPKG_DSM_VERSION_MAJOR.$SYNOPKG_DSM_VERSION_MINOR-$SYNOPKG_DSM_VERSION_BUILD" >> "${INST_LOG}" 2>&1
-if [ "$SYNOPKG_DSM_VERSION_MAJOR" -gt 1 ]; then
+if [ "$SYNOPKG_DSM_VERSION_MAJOR" -gt 1 ]; then # todo find something better
     OS="dsm"
 else
     OS="srm"

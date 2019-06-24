@@ -33,7 +33,7 @@ blocklist_cron_uninstall () {
 pgrep () {
     if [ "$OS" == 'dsm' ]; then
         # shellcheck disable=SC2009,SC2153
-        ps aux | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
+        ps aux | grep "$1" >> "${LOG_FILE}" 2>&1
     else
         # shellcheck disable=SC2009,SC2153
         ps -w | grep "[^]]$1" >> "${LOG_FILE}" 2>&1
@@ -45,7 +45,7 @@ restart_dhcpd () {
 }
 
 forward_dns_dhcpd () {
-    echo "dns forwarding - dhcpd (dnsmasq) enabled: $1" >> "${LOG_FILE}"
+    echo "dns forwarding - $1" >> "${LOG_FILE}"
     if [ "$1" == "no" ] && [ -f /etc/dhcpd/dhcpd-dnscrypt-dnscrypt.conf ]; then
         if [ "$OS" == 'dsm' ]; then
             echo "enable=no" > /etc/dhcpd/dhcpd-dns-dns.info

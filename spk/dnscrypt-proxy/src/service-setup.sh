@@ -16,10 +16,9 @@ UNAME=$(uname -a)
 echo "uname: $UNAME" >> "${INST_LOG}" 2>&1
 # SRM example: Linux {some-name} 4.4.60 #7779 SMP Mon Jan 28 04:30:39 CST 2019 armv7l GNU/Linux synology_ipq806x_rt2600ac
 # DSM example: Linux {some-name} 3.10.105 #23739 SMP Tue Jul 3 19:47:13 CST 2018 x86_64 GNU/Linux synology_bromolow_3615xs
+OS="dsm"
 if echo "$UNAME" | grep -q -i 'rt1900ac\|rt2600ac\|mr2200ac'; then
     OS="srm"
-else
-    OS="dsm"
 fi
 echo "OS detected: $OS" >> "${INST_LOG}" 2>&1
 

@@ -16,7 +16,7 @@ shared: &shared
     - save_cache:
         paths: /spksrc/toolchains
         key: v1-toolchain-{{ .Environment.CIRCLE_JOB }}
-    - run: ls packages/*.spk
+    - run: ls packages/*.spk || true
     - store_artifacts:
         path: packages
 tags_only_filter: &tags_only_filter

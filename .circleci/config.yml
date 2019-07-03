@@ -90,18 +90,18 @@ jobs:
     <<: *shared
     environment:
       - SYNOARCH=arch-northstarplus-1.1
-   "qoriq-6.1":
-     <<: *shared
-     environment:
-       - SYNOARCH=arch-qoriq-6.1
+  "qoriq-6.1":
+    <<: *shared
+    environment:
+      - SYNOARCH=arch-qoriq-6.1
   "rtd1296-6.1":
     <<: *shared
     environment:
       - SYNOARCH=arch-rtd1296-6.1
-   "ppc853x-5.2":
-     <<: *shared
-     environment:
-       - SYNOARCH=arch-ppc853x-5.2
+  "ppc853x-5.2":
+    <<: *shared
+    environment:
+      - SYNOARCH=arch-ppc853x-5.2
   deploy:
     docker:
       - image: alpine
@@ -150,12 +150,12 @@ workflows:
           <<: *tags_only_filter
       - "northstarplus-1.1":
           <<: *tags_only_filter
-       - "qoriq-6.1":
+      - "qoriq-6.1":
           <<: *tags_only_filter
       - "rtd1296-6.1":
           <<: *tags_only_filter
-       - "ppc853x-5.2":
-           <<: *tags_only_filter
+      - "ppc853x-5.2":
+          <<: *tags_only_filter
       - deploy:
           <<: *tags_only_filter
           requires:
@@ -175,6 +175,6 @@ workflows:
             - "ipq806x-1.2"
             - "monaco-6.1"
             - "northstarplus-1.1"
-             - "qoriq-6.1"
+            - "qoriq-6.1"
             - "rtd1296-6.1"
             - "ppc853x-5.2"

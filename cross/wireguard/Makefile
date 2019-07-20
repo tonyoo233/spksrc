@@ -3,7 +3,7 @@ PKG_VERS = 0.0.20190702
 PKG_EXT = tar.xz
 PKG_DIST_SITE = https://git.zx2c4.com/WireGuard/snapshot
 PKG_DIST_NAME = WireGuard-$(PKG_VERS).$(PKG_EXT)
-PKG_DIR =  $(PKG_NAME)-$(PKG_VERS)
+PKG_DIR = WireGuard-$(PKG_VERS)/src
 
 REQ_KERNEL = 1
 
@@ -22,9 +22,9 @@ include ../../mk/spksrc.cross-cc.mk
 
 .PHONY: wireguard-compile wireguard-install
 wireguard-compile:
-	$(RUN) && cd $(WORK_DIR)/$(PKG_NAME)-$(PKG_VERS)/src && KERNELDIR=$(KERNEL_DIR) $(MAKE)
+	$(RUN) && KERNELDIR=$(KERNEL_DIR) $(MAKE)
 wireguard-install:
 	install -m 755 -d $(STAGING_INSTALL_PREFIX)/bin
-	install -m 755 $(WORK_DIR)/$(PKG_NAME)-$(PKG_VERS)/src/tools/wg $(STAGING_INSTALL_PREFIX)/bin
-	install -m 755 $(WORK_DIR)/$(PKG_NAME)-$(PKG_VERS)/src/tools/wg-quick/linux.bash $(STAGING_INSTALL_PREFIX)/bin/wg-quick
-	install -m 644 $(WORK_DIR)/$(PKG_NAME)-$(PKG_VERS)/src/wireguard.ko $(STAGING_INSTALL_PREFIX)/
+	install -m 755 $(WORK_DIR)/$(PKG_DIR)/tools/wg $(STAGING_INSTALL_PREFIX)/bin
+	install -m 755 $(WORK_DIR)/$(PKG_DIR)/tools/wg-quick/linux.bash $(STAGING_INSTALL_PREFIX)/bin/wg-quick
+	install -m 644 $(WORK_DIR)/$(PKG_DIR)/wireguard.ko $(STAGING_INSTALL_PREFIX)/

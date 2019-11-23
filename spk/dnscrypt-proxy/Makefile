@@ -1,5 +1,5 @@
 SPK_NAME = dnscrypt-proxy
-SPK_VERS = 2.0.31
+SPK_VERS = 2.0.33
 SPK_REV = 0
 SPK_ICON = src/dnscrypt-proxy.png
 

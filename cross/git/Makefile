@@ -1,5 +1,5 @@
 PKG_NAME = git
-PKG_VERS = 2.15.1
+PKG_VERS = 2.23.0
 PKG_EXT = tar.xz
 PKG_DIST_NAME = $(PKG_NAME)-$(PKG_VERS).$(PKG_EXT)
 PKG_DIST_SITE = https://www.kernel.org/pub/software/scm/$(PKG_NAME)
@@ -14,21 +14,21 @@ LICENSE  = GPLv2
 GNU_CONFIGURE = 1
 CONFIGURE_ARGS  = --without-tcltk --without-python ac_cv_fread_reads_directories=yes ac_cv_snprintf_returns_bogus=no
 
-PRE_CONFIGURE_TARGET = myPreConfigure
-INSTALL_TARGET = myInstall
-POST_INSTALL_TARGET = myPostInstall
+PRE_CONFIGURE_TARGET = git_pre_configure
+INSTALL_TARGET = git_install
+POST_INSTALL_TARGET = git_post_install
 
 include ../../mk/spksrc.cross-cc.mk
 
-.PHONY: myPreConfigure
-myPreConfigure:
+.PHONY: git_pre_configure
+git_configure:
 	$(RUN) autoconf
 
-.PHONY: myInstall
-myInstall:
+.PHONY: git_install
+git_install:
 	$(RUN) $(MAKE) install DESTDIR=$(INSTALL_DIR) prefix=$(INSTALL_PREFIX) NO_INSTALL_HARDLINKS=1
 
-.PHONY: myPostInstall
-myPostInstall:
+.PHONY: git_post_install
+git_post_install:
 	install -m 755 -d $(STAGING_INSTALL_PREFIX)/etc
 	install -m 644 src/gitconfig $(STAGING_INSTALL_PREFIX)/etc/gitconfig

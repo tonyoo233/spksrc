@@ -1,5 +1,5 @@
 SPK_NAME = i2pd
-SPK_VERS = 2.23.0
+SPK_VERS = 2.29.0
 SPK_REV = 0
 SPK_ICON = src/i2pd.png
 

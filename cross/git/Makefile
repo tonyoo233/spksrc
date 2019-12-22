@@ -21,7 +21,7 @@ POST_INSTALL_TARGET = git_post_install
 include ../../mk/spksrc.cross-cc.mk
 
 .PHONY: git_pre_configure
-git_configure:
+git_pre_configure:
 	$(RUN) autoconf
 
 .PHONY: git_install

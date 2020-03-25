@@ -8,3 +8,5 @@ SERVICE_COMMAND="${SYNOPKG_PKGDEST}/jellyfin --noautorunwebapp --package-name sy
 
 SVC_BACKGROUND=y
 SVC_WRITE_PID=y
+
+GROUP=sc-media

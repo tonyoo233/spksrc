@@ -54,5 +54,5 @@ endif
 jellyfin_compile_target:
 	$(RUN) dotnet publish Jellyfin.Server --configuration Release --self-contained --runtime linux-$(DOTNET_ARCH) --output="$(STAGING_INSTALL_PREFIX)" "-p:GenerateDocumentationFile=false;DebugSymbols=false;DebugType=none;UseAppHost=true;PublishSingleFile=true;PublishReadyToRun=true;PublishReadyToRunShowWarnings=true"
 	cd $(WORK_DIR) && curl -L https://github.com/jellyfin/jellyfin-web/archive/${PKG_DIST_NAME} | tar zxf -
-	cd $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS) && yarn install
+	cd $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS) && npm install
 	install -m 755 -d $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS)/dist $(STAGING_INSTALL_PREFIX)/web

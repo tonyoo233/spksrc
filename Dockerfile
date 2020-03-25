@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         lzip \
         mercurial \
         ncurses-dev \
+        npm \
         php \
         pkg-config \
         pgp \
@@ -51,7 +52,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         subversion \
         swig \
         unzip \
-        yarn \
         xmlto \
         zlib1g-dev && \
     apt-get clean && \

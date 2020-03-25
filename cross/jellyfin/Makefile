@@ -10,7 +10,7 @@ PKG_DIR = $(PKG_NAME)-$(PKG_VERS)
 DEPENDS =
 
 HOMEPAGE = https://jellyfin.org
-COMMENT  = The Free Software Media System
+COMMENT  = The Free Software Media System. It is an alternative to the proprietary Emby and Plex.
 LICENSE  = GPLv2
 
 CONFIGURE_TARGET = none
@@ -53,3 +53,6 @@ endif
 # self-contained include .NET Runtime
 jellyfin_compile_target:
 	$(RUN) dotnet publish Jellyfin.Server --configuration Release --self-contained --runtime linux-$(DOTNET_ARCH) --output="$(STAGING_INSTALL_PREFIX)" "-p:GenerateDocumentationFile=false;DebugSymbols=false;DebugType=none;UseAppHost=true;PublishSingleFile=true;PublishReadyToRun=true;PublishReadyToRunShowWarnings=true"
+	cd $(WORK_DIR) && curl -L https://github.com/jellyfin/jellyfin-web/archive/${PKG_DIST_NAME} | tar zxf -
+	cd $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS) && yarn install
+	install -m 755 -d $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS)/dist $(STAGING_INSTALL_PREFIX)/web

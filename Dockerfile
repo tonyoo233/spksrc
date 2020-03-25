@@ -51,6 +51,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         subversion \
         swig \
         unzip \
+        yarn \
         xmlto \
         zlib1g-dev && \
     apt-get clean && \

@@ -7,7 +7,7 @@ DSM_UI_DIR = app
 DEPENDS = cross/$(SPK_NAME)
 
 MAINTAINER = publicarray
-DESCRIPTION = "The Free Software Media System"
+DESCRIPTION = "The Free Software Media System. It is an alternative to the proprietary Emby and Plex."
 DISPLAY_NAME = Jellyfin
 BETA = 1
 STARTABLE = yes
@@ -25,8 +25,6 @@ SERVICE_PORT_TITLE = Jellyfin (HTTP)
 
 # Admin link
 ADMIN_PORT = $(SERVICE_PORT)
-
-POST_STRIP_TARGET = jackett_extra_install
 
 # no PPC support
 UNSUPPORTED_ARCHS = $(PPC_ARCHES)

@@ -57,4 +57,4 @@ jellyfin_compile_target:
 	cd $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS) && npm install && npm run build
 
 jellyfin_install_target:
-	install -m 755 -d $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS)/dist $(STAGING_INSTALL_PREFIX)/web
+	mv $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS)/dist $(STAGING_INSTALL_PREFIX)/web

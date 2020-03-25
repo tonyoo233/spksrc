@@ -15,7 +15,7 @@ LICENSE  = GPLv2
 
 CONFIGURE_TARGET = none
 COMPILE_TARGET = jellyfin_compile_target
-INSTALL_TARGET = none
+INSTALL_TARGET = jellyfin_install_target
 
 UNSUPPORTED_ARCHS = $(PPC_ARCHES)
 
@@ -43,7 +43,7 @@ ifeq ($(DOTNET_ARCH),)
 $(error Unsupported ARCH $(ARCH))
 endif
 
-.PHONY: jellyfin_compile_target
+.PHONY: jellyfin_compile_target jellyfin_install_target
 # PublishSingleFile better for packaging than multiple small dlls
 # PublishReadyToRun improve the startup time of your .NET Core application
 #   by compiling your application assemblies as ReadyToRun (R2R) format.
@@ -55,4 +55,6 @@ jellyfin_compile_target:
 	$(RUN) dotnet publish Jellyfin.Server --configuration Release --self-contained --runtime linux-$(DOTNET_ARCH) --output="$(STAGING_INSTALL_PREFIX)" "-p:GenerateDocumentationFile=false;DebugSymbols=false;DebugType=none;UseAppHost=true;PublishSingleFile=true;PublishReadyToRun=true;PublishReadyToRunShowWarnings=true"
 	cd $(WORK_DIR) && curl -L https://github.com/jellyfin/jellyfin-web/archive/${PKG_DIST_NAME} | tar zxf -
 	cd $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS) && npm install
+
+jellyfin_install_target:
 	install -m 755 -d $(WORK_DIR)/$(PKG_NAME)-web-$(PKG_VERS)/dist $(STAGING_INSTALL_PREFIX)/web

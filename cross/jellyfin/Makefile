@@ -17,6 +17,10 @@ CONFIGURE_TARGET = none
 COMPILE_TARGET = jellyfin_compile_target
 INSTALL_TARGET = none
 
+UNSUPPORTED_ARCHS = $(PPC_ARCHES)
+
+include ../../mk/spksrc.cross-cc.mk
+
 # https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 # https://github.com/dotnet/runtime/blob/master/src/libraries/pkg/Microsoft.NETCore.Platforms/runtime.json
 ifeq ($(findstring $(ARCH),$(ARM5_ARCHES)),$(ARCH))
@@ -39,10 +43,8 @@ ifeq ($(DOTNET_ARCH),)
 $(error Unsupported ARCH $(ARCH))
 endif
 
-include ../../mk/spksrc.cross-cc.mk
-
 .PHONY: jellyfin_compile_target
-# PublishSingleFile better for packaging than mutliple small dlls
+# PublishSingleFile better for packaging than multiple small dlls
 # PublishReadyToRun improve the startup time of your .NET Core application
 #   by compiling your application assemblies as ReadyToRun (R2R) format.
 #   R2R is a form of ahead-of-time (AOT) compilation.

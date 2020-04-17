@@ -115,7 +115,7 @@ jobs:
       GITHUB_USER: publicarray
       GITHUB_REPO: spksrc
     steps:
-      - run: apk update && apk add git ssh bash curl jq file grep coreutils
+      - run: apk update && apk add git openssh bash curl jq file grep coreutils
       - checkout
       - deploy:
           command: ./.circleci/deploy.sh

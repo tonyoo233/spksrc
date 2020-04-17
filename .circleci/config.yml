@@ -5,14 +5,20 @@ shared: &shared
     - image: synocommunity/spksrc:latest
   working_directory: /spksrc
   steps:
+    - run: apt update && apt install -y git ssh
     - checkout
     - run: make setup
+    - restore_cache:
+        key: v1-distrib
     - restore_cache:
         key: v1-toolchain-{{ .Environment.CIRCLE_JOB }}
     - run:
         name: Build
         command: cd /spksrc/spk/${CIRCLE_TAG%-*} && make "$SYNOARCH" || true
         no_output_timeout: 30m
+    - save_cache:
+        paths: /spksrc/distrib
+        key: v1-distrib
     - save_cache:
         paths: /spksrc/toolchains
         key: v1-toolchain-{{ .Environment.CIRCLE_JOB }}
@@ -109,9 +115,8 @@ jobs:
       GITHUB_USER: publicarray
       GITHUB_REPO: spksrc
     steps:
+      - run: apk update && apk add git ssh bash curl jq file grep coreutils
       - checkout
-      - run: apk update
-      - run: apk add bash curl jq file grep coreutils
       - deploy:
           command: ./.circleci/deploy.sh
 workflows:

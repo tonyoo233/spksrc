@@ -42,10 +42,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         lzip \
         mercurial \
         ncurses-dev \
-        npm \
         php \
         pkg-config \
-        pgp \
         python3 \
         python3-distutils \
         scons \
@@ -56,17 +54,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         zlib1g-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# install dotnet
-RUN wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg && \
-    mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ && \
-    wget https://packages.microsoft.com/config/debian/10/prod.list && \
-    mv prod.list /etc/apt/sources.list.d/microsoft-prod.list && \
-    apt-get update && apt-get install --no-install-recommends -y \
-        dotnet-sdk-3.1 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 
 # Install setuptools, wheel and pip for Python3
 RUN wget https://bootstrap.pypa.io/get-pip.py -O - | python3

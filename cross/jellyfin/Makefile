@@ -10,6 +10,8 @@ HOMEPAGE = https://jellyfin.org
 COMMENT  = The Free Software Media System. It is an alternative to the proprietary Emby and Plex.
 LICENSE  = GPLv2
 
+DEPENDS = native/nodejs native/dotnet-sdk
+
 CONFIGURE_TARGET = none
 COMPILE_TARGET = jellyfin_compile_target
 INSTALL_TARGET = jellyfin_install_target

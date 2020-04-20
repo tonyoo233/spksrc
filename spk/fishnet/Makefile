@@ -1,5 +1,5 @@
 SPK_NAME = fishnet
-SPK_VERS = 2.0.2284
+SPK_VERS = 180120
 SPK_REV =
 SPK_ICON = src/stockfish.png
 

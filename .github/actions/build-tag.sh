@@ -5,5 +5,4 @@ PACKAGE=$(echo "$GITHUB_REF" | grep -oE "([0-9a-zA-Z]*-)*")
 PACKAGE="${PACKAGE::-1}"
 echo "$PACKAGE"
 
-
 cd spk/"$PACKAGE" && make "$1"

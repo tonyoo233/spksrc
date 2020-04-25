@@ -25,7 +25,7 @@ jobs:
         with:
           entrypoint: ./.github/actions/entrypoint.sh
           # args: arch-x64-6.1
-          args: all-supported
+          args: all-archs-latest
       - name: List packages
         run: ls packages
 

@@ -1,13 +1,9 @@
 name: Build workflow
 
 on:
-  # paths-ignore:
-  #   - "**.md"
-  # pull_request:
-  #   paths-ignore:
-  #     - "**.md"
-  tag:
-    - "*-*"
+  push:
+    tags:
+      - "*-*"
 
 jobs:
   build:

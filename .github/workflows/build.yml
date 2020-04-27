@@ -1,0 +1,100 @@
+name: Build
+
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  push:
+    tags:
+      - "*-*"
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # x64,  #evansport=x86, aarch64=armv8, armv7, 88f6281=armv5, ppc853x/qoriq=ppc
+        # https://github.com/SynoCommunity/spksrc/wiki/Synology-and-SynoCommunity-Package-Architectures
+        arch: [x64-6.1, evansport-6.1, aarch64-6.1, armv7-6.1, armv7-1.2, 88f6281-6.1, qoriq-6.1]
+    steps:
+      - name: Cache toolchains
+        uses: actions/cache@v1
+        with:
+          path: toolchains
+          key: toolchains-${{ matrix.arch }}-v2
+          restore-keys: toolchains-${{ matrix.arch }}
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Get changed files
+        id: getfile
+        run: |
+          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)"
+
+      - name: Print changed files
+        run: |
+          echo ${{ steps.getfile.outputs.files }}
+
+      - name: Build Package
+        if: steps.getfile.outputs.files == '*spk/*' || steps.getfile.outputs.files == '*cross/*'
+        uses: docker://synocommunity/spksrc:latest
+        with:
+          entrypoint: ./.github/actions/build-push-pr.sh
+        env:
+          GH_FILES: ${{ steps.getfile.outputs.files }}
+          # https://github.com/SynoCommunity/spksrc/wiki/Compile-and-build-rules
+          GH_ARCH: arch-${{ matrix.arch }}
+
+      - name: List packages
+        run: mkdir packages && ls packages
+
+  release-build:
+    name: Build Release
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # x64,  #evansport=x86, aarch64=armv8, armv7, 88f6281=armv5, ppc853x/qoriq=ppc
+        arch: [x64-6.1, evansport-6.1, aarch64-6.1, armv7-6.1, armv7-1.2, 88f6281-6.1, qoriq-6.1]
+
+    steps:
+      - name: Cache toolchains
+        uses: actions/cache@v1
+        with:
+          path: toolchains
+          key: toolchains-${{ matrix.arch }}-v2
+          restore-keys: toolchains-${{ matrix.arch }}
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Build Package
+        uses: docker://synocommunity/spksrc:latest
+        with:
+          entrypoint: ./.github/actions/build-tag.sh
+          # https://github.com/SynoCommunity/spksrc/wiki/Compile-and-build-rules
+        env:
+          GH_ARCH: arch-${{ matrix.arch }}
+          #   API_KEY: ${{ secrets.PUBLISH_API_KEY }}
+
+      - name: List packages
+        run: ls packages
+
+      # - name: Upload build artifact
+      #   uses: actions/upload-artifact@v2-preview
+      #   with:
+      #     name: Packages
+      #     path: packages/*.spk
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: packages/*.spk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

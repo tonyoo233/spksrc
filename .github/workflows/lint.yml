@@ -1,0 +1,21 @@
+name: Lint
+
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  push:
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Lint
+        run: |
+          sudo npm install -g jsonlint
+          make lint

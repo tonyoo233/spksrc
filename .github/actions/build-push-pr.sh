@@ -16,7 +16,6 @@ EOF
 
 # get dependency tree
 DEPENDENCY_TREE=
-
 echo "Building dependency tree..."
 for package in $(find spk/ -maxdepth 1 -type d | cut -c 5- | sort)
 do
@@ -25,40 +24,26 @@ do
     popd > /dev/null || exit
 done
 
-
 # filter for changes made in the cross and spk directories
-GH_FILES=$(echo "$GH_FILES" | grep -oE "(spk.*)|(cross.*)")
-
-echo "FILES: $GH_FILES"
+GH_FILES=$(echo "$GH_FILES" | grep -oE "(spk.*)|(cross.*)|(native.*)")
 
 # create array of potential packages where files have changed
 GH_PACKAGES_ARR=()
 for file in $GH_FILES
 do
-    # Add spk
-    # remove leading spk from string
-    if [[ "$file" == spk/* ]]; then
-        package=${file#spk/}
-        # get package name / folder name
-        package=$(echo "$package" | grep -oE "^[^\/]*")
-        GH_PACKAGES_ARR+=("$package")
-    fi
-
-    # Find dependencies
     # remove leading spk/cross/native from string
     file=${file#spk/}
     file=${file#cross/}
     file=${file#native/}
     # get package name / folder name
     package=$(echo "$file" | grep -oE "^[^\/]*")
-    echo "package: $package"
+    echo "===> Searching for dependent package: $package"
     packages=$(echo "$DEPENDENCY_TREE" \
         | awk -v package="$package" \
         'NF == 2 {x=$2} $2 == package {print x}' \
          | sort -u)
 
-    echo "awk: $packages"
-
+    echo "===> Found: $packages"
     for package in $packages
     do
         GH_PACKAGES_ARR+=("$package")
@@ -70,7 +55,7 @@ done
 packages=$(printf %s "${GH_PACKAGES_ARR[*]}" | tr ' ' '\n' | sort -u)
 
 if [ -z "$packages" ]; then
-    echo "no package built. Empty PACKAGES var"
+    echo "===> No packages built <==="
     exit 0
 fi
 
